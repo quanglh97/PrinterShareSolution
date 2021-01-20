@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PrintShareSolution.Data.Entities;
+using PrintShareSolution.Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,12 +23,14 @@ namespace eShopSolution.Data.Extensions
                 new AppConfig() { Key = "HomeDescription", Value = "This is description of PrinterShareSolution" });
 
             modelBuilder.Entity<Printer>().HasData(
-                new Printer() { Id = 1, Name = "P1", Status = PrintShareSolution.Data.Enums.Status.InActive},
-                new Printer() { Id = 2, Name = "P2", Status = PrintShareSolution.Data.Enums.Status.InActive});
+                new Printer() { Id = 1, Name = "P1", Status = Status.InActive},
+                new Printer() { Id = 2, Name = "P2", Status = Status.InActive});
 
             modelBuilder.Entity<OrderPrintFile>().HasData(
-                new OrderPrintFile() { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx" },
-                new OrderPrintFile() { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx" });
+                new OrderPrintFile() 
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx", ActionOrder = ActionOrder.PrintFile },
+                new OrderPrintFile() 
+                { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx", ActionOrder = ActionOrder.SendFile });
 
 
             modelBuilder.Entity<ListPrinterOfUser>().HasData(
