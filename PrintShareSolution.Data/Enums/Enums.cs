@@ -9,4 +9,9 @@ namespace PrintShareSolution.Data.Enums
         InActive,
         Active
     }
+    public enum ActionOrder
+    {
+        SendFile,
+        PrintFile
+    }
 }
