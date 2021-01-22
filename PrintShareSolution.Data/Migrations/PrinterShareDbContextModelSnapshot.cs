@@ -180,7 +180,7 @@ namespace PrintShareSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "1337e323-8b12-4497-a39e-7e8444bd6f04",
+                            ConcurrencyStamp = "cc36e4aa-31e3-4384-90e8-fc795f702434",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -249,14 +249,14 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "93fc9737-72f8-45a4-8adc-2052db985b5a",
+                            ConcurrencyStamp = "a5a3ae48-7d47-41c7-8e33-aafbc7ff65d4",
                             Email = "quanglehoi@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Lê Hội Quang",
                             LockoutEnabled = false,
                             NormalizedEmail = "quanglehoi@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDT1JGnnGan57K1uITq6C4nJyvdh6BpsEyyyz2fqE/kTMqbBPGZE2yMgWvUhYacePw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENTlQv+O8KIHuc2iNpfC+WIoLSRMaiOF040khO9f5LUq47rlGX7n/opguyzXpUWkLg==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -298,12 +298,23 @@ namespace PrintShareSolution.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PrintShareSolution.Data.Entities.ListPrinterOfUser", b =>
+            modelBuilder.Entity("PrintShareSolution.Data.Entities.HistoryOfUser", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
+
+                    b.Property<int>("ActionHistory")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("PrinterId")
                         .HasColumnType("int");
@@ -317,20 +328,44 @@ namespace PrintShareSolution.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ListPrinterOfUser");
+                    b.ToTable("HistoryOfUsers");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
+                            ActionHistory = 0,
+                            DateTime = new DateTime(2021, 1, 23, 1, 17, 0, 402, DateTimeKind.Local).AddTicks(6087),
+                            FileName = "C://xxx.docx",
                             PrinterId = 1,
                             UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
+                        });
+                });
+
+            modelBuilder.Entity("PrintShareSolution.Data.Entities.ListPrinterOfUser", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("PrinterId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "PrinterId");
+
+                    b.HasIndex("PrinterId");
+
+                    b.ToTable("ListPrinterOfUser");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
+                            PrinterId = 1
                         },
                         new
                         {
-                            Id = 2,
-                            PrinterId = 2,
-                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
+                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
+                            PrinterId = 2
                         });
                 });
 
@@ -359,6 +394,9 @@ namespace PrintShareSolution.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("PrinterId")
                         .HasColumnType("int");
 
@@ -381,6 +419,7 @@ namespace PrintShareSolution.Data.Migrations
                             DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FileName = "xxx.docx",
                             FilePath = "C://xxx.docx",
+                            FileSize = 0L,
                             PrinterId = 1,
                             UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
                         },
@@ -391,6 +430,7 @@ namespace PrintShareSolution.Data.Migrations
                             DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FileName = "xxx.docx",
                             FilePath = "C://xxx.docx",
+                            FileSize = 0L,
                             PrinterId = 2,
                             UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
                         });
@@ -443,6 +483,25 @@ namespace PrintShareSolution.Data.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("PrintShareSolution.Data.Entities.HistoryOfUser", b =>
+                {
+                    b.HasOne("PrintShareSolution.Data.Entities.Printer", "Printer")
+                        .WithMany("HistoryOfUsers")
+                        .HasForeignKey("PrinterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PrintShareSolution.Data.Entities.AppUser", "AppUser")
+                        .WithMany("HistoryOfUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+
+                    b.Navigation("Printer");
+                });
+
             modelBuilder.Entity("PrintShareSolution.Data.Entities.ListPrinterOfUser", b =>
                 {
                     b.HasOne("PrintShareSolution.Data.Entities.Printer", "Printer")
@@ -485,6 +544,8 @@ namespace PrintShareSolution.Data.Migrations
                 {
                     b.Navigation("BlockIds");
 
+                    b.Navigation("HistoryOfUsers");
+
                     b.Navigation("ListPrinterOfUsers");
 
                     b.Navigation("OrderPrintFiles");
@@ -492,6 +553,8 @@ namespace PrintShareSolution.Data.Migrations
 
             modelBuilder.Entity("PrintShareSolution.Data.Entities.Printer", b =>
                 {
+                    b.Navigation("HistoryOfUsers");
+
                     b.Navigation("ListPrinterOfUsers");
 
                     b.Navigation("OrderPrintFiles");

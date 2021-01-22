@@ -12,7 +12,7 @@ namespace PrintShareSolution.Data.Entities
         public int PrinterId { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
-
+        public long FileSize { get; set; }
         public ActionOrder ActionOrder { get; set; }
         public DateTime DateTime { get; set; }
 

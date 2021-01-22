@@ -7,11 +7,19 @@ namespace PrintShareSolution.Data.Enums
     public enum Status
     {
         InActive,
-        Active
+        Active,
+        AnyActive
     }
     public enum ActionOrder
     {
         SendFile,
+        PrintFile
+    }
+    public enum ActionHistory
+    {
+        SendFile,
+        OrderPrintFile,
+        ReceiveFile,
         PrintFile
     }
 }

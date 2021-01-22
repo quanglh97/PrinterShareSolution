@@ -34,11 +34,15 @@ namespace eShopSolution.Data.Extensions
 
 
             modelBuilder.Entity<ListPrinterOfUser>().HasData(
-                new ListPrinterOfUser() { Id = 1, UserId = adminId, PrinterId = 1 },
-                new ListPrinterOfUser() { Id = 2, UserId = adminId, PrinterId = 2 });
+                new ListPrinterOfUser() { UserId = adminId, PrinterId = 1 },
+                new ListPrinterOfUser() { UserId = adminId, PrinterId = 2 });
 
             modelBuilder.Entity<BlockList>().HasData(
                 new BlockList() {Id = 1, UserId = adminId, UserBlockedId = clientId , BlackListFilePath = "C://BackList.txt"} );
+
+            modelBuilder.Entity<HistoryOfUser>().HasData(
+                new HistoryOfUser() 
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "C://xxx.docx", ActionHistory = ActionHistory.SendFile, DateTime = DateTime.Now});
 
             // any guid
             

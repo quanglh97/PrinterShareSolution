@@ -6,7 +6,7 @@ namespace PrintShareSolution.Data.Entities
 {
     public class ListPrinterOfUser
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public Guid UserId { get; set; }
         public int PrinterId { get; set; }
 

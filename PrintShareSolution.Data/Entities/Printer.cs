@@ -12,6 +12,7 @@ namespace PrintShareSolution.Data.Entities
         public Status Status { set; get; }
         public List<ListPrinterOfUser> ListPrinterOfUsers { get; set; }
         public List<OrderPrintFile> OrderPrintFiles { get; set; }
+        public List<HistoryOfUser> HistoryOfUsers { get; set; }
 
 
     }

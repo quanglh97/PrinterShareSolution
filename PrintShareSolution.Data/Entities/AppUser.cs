@@ -12,5 +12,6 @@ namespace PrintShareSolution.Data.Entities
         public List<BlockList> BlockIds { get; set; }
         public List<OrderPrintFile> OrderPrintFiles { get; set; }
         public List<ListPrinterOfUser> ListPrinterOfUsers { get; set; }
+        public List<HistoryOfUser> HistoryOfUsers { get; set; }
     }
 }
