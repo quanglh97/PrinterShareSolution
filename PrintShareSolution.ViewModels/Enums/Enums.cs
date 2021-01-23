@@ -17,7 +17,7 @@ namespace PrintShareSolution.ViewModels.Enums
     }
     public enum ActionHistory
     {
-        SendFile,
+        OrderSendFile,
         OrderPrintFile,
         ReceiveFile,
         PrintFile

@@ -13,5 +13,6 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
         Task<int> Delete(OrderPrintFileDeleteRequest request);
         Task<PagedResult<OrderPrintFileVm>> GetByPrinterId(GetOrderPrintFilePagingRequest request);
         Task<OrderPrintFileVm> GetById(int id);
+        Task<int> RefreshHistory(Guid UserId);
     }
 }

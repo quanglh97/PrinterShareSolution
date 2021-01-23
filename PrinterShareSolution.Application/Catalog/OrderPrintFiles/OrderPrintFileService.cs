@@ -46,6 +46,22 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     FilePath = await this.SaveFile(request.ThumbnailFile),
                 };
 
+                //Create History Order Of User
+                var actionOrder = ActionHistory.OrderPrintFile;
+                if(request.ActionOrder != PrintShareSolution.ViewModels.Enums.ActionOrder.PrintFile)
+                {
+                    actionOrder = ActionHistory.OrderSendFile;
+                }
+                var historyOfUser = new HistoryOfUser()
+                {
+                    UserId = request.UserId,
+                    PrinterId = request.PrinterId,
+                    FileName = request.FileName,
+                    ActionHistory = actionOrder,
+                    DateTime = DateTime.Now
+                };
+                _context.HistoryOfUsers.Add(historyOfUser);
+
                 _context.OrderPrintFiles.Add(orderPrintFile);
                 await _context.SaveChangesAsync();
                 return orderPrintFile.Id;
@@ -79,7 +95,6 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 
             //3. Paging
             int totalRow = await query.CountAsync();
-
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .Select(x => new OrderPrintFileVm()
@@ -101,6 +116,28 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 PageIndex = request.PageIndex,
                 Items = data
             };
+
+            //Create History DO Order Of User
+
+            var orderPrintFiles =  await _context.OrderPrintFiles.Where(i => i.PrinterId == request.PrinterId).ToListAsync();
+            foreach (var orderPrintFile in orderPrintFiles)
+            {
+                var actionDo = ActionHistory.PrintFile;
+                if (orderPrintFile.ActionOrder != ActionOrder.PrintFile)
+                {
+                    actionDo = ActionHistory.ReceiveFile;
+                }
+                var historyOfUser = new HistoryOfUser()
+                {
+                    UserId = request.UserId,
+                    PrinterId = request.PrinterId,
+                    FileName = orderPrintFile.FileName,
+                    ActionHistory = actionDo,
+                    DateTime = DateTime.Now
+                };
+                _context.HistoryOfUsers.Add(historyOfUser);
+                await _context.SaveChangesAsync();
+            }
             return pagedResult;
         }
 
@@ -127,6 +164,29 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 FileSize = orderPrintFile.FileSize
             };
             return orderPrintFileViewModel;
+        }
+
+        public async Task<int> RefreshHistory(Guid UserId)
+        {
+            //var userId = await _context.Users.FindAsync(request.UserId);
+            var userId = await _context.Users.FindAsync(UserId);
+            if (userId == null) throw new PrinterShareException($"This UserId is invalid");
+            //else if (userId == null) throw new PrinterShareException($"Cannot have user: {request.UserId}");
+            else
+            {
+                var historyOfUsers = await _context.HistoryOfUsers.ToListAsync();
+                DateTime now = DateTime.Now;
+                foreach (var historyOfUser in historyOfUsers)
+                {
+                    TimeSpan span = now.Subtract(historyOfUser.DateTime);
+                    if(span.Days >= 0)
+                    {
+                        _context.HistoryOfUsers.Remove(historyOfUser);
+                    }
+                }
+            }
+
+            return await _context.SaveChangesAsync();
         }
     }
 }

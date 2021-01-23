@@ -78,9 +78,15 @@ namespace PrinterShareSolution.BackendApi.Controllers
         }
 
         [HttpGet("paging")]
-        public async Task<IActionResult> GetAllPaging([FromQuery] GetPrinterPagingRequest request)
+        public async Task<IActionResult> GetStatusPaging([FromQuery] GetPrinterPagingRequest request)
         {
-            var printers = await _printerService.GetAllPaging(request);
+            var printers = await _printerService.GetStatusPaging(request);
+            return Ok(printers);
+        }
+        [HttpGet("keyWord")]
+        public async Task<IActionResult> GetKeyWordPaging(string keyWord)
+        {
+            var printers = await _printerService.GetKeyWordPaging(keyWord);
             return Ok(printers);
         }
     }

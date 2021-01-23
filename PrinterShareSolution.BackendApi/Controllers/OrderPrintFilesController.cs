@@ -61,5 +61,14 @@ namespace PrinterShareSolution.BackendApi.Controllers
                 return BadRequest("Cannot find printer");
             return Ok(printer);
         }
+
+        [HttpGet("RefreshHistory/{userId}")]
+        public async Task<IActionResult> Get(Guid userId)
+        {
+            var affectedResult = await _orderPrintFileService.RefreshHistory(userId);
+            if (affectedResult == 0)
+                return BadRequest(); 
+            return Ok();
+        }
     }
 }

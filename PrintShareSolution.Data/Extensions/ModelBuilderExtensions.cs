@@ -42,7 +42,7 @@ namespace eShopSolution.Data.Extensions
 
             modelBuilder.Entity<HistoryOfUser>().HasData(
                 new HistoryOfUser() 
-                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "C://xxx.docx", ActionHistory = ActionHistory.SendFile, DateTime = DateTime.Now});
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "C://xxx.docx", ActionHistory = ActionHistory.OrderSendFile, DateTime = DateTime.Now});
 
             // any guid
             

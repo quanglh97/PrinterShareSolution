@@ -97,7 +97,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             return printerViewModel;
         }
 
-        public async Task<PagedResult<PrinterVm>> GetAllPaging(GetPrinterPagingRequest request)
+        public async Task<PagedResult<PrinterVm>> GetStatusPaging(GetPrinterPagingRequest request)
         {
             //1. Select join
             var query = from p in _context.Printers 
@@ -128,6 +128,53 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 TotalRecords = totalRow,
                 PageSize = request.PageSize,
                 PageIndex = request.PageIndex,
+                Items = data
+            };
+            return pagedResult;
+        }
+
+        public async Task<PagedResult<PrinterVm>> GetKeyWordPaging(string KeyWord)
+        {
+            //1. Select join
+            var query = from p in _context.Printers
+                        join pou in _context.ListPrinterOfUsers on p.Id equals pou.PrinterId
+                        join u in _context.Users on pou.UserId equals u.Id
+                        select new { p, pou, u };
+
+            //2. filter
+            var queryTemp = query;
+            if (!string.IsNullOrEmpty(KeyWord))
+            {
+                query = query.Where(x => x.u.UserName.ToLower().Contains(KeyWord.ToLower()));
+                if(query.Count() == 0) 
+                {
+                    query = queryTemp;
+                    query = query.Where(x => x.u.Email.ToLower().Contains(KeyWord.ToLower()));
+                }
+                if(query.Count() == 0)
+                {
+                    query = queryTemp;
+                    query = query.Where(x => x.u.Id.ToString().ToLower().Contains(KeyWord.ToLower()));
+                }
+                    query = query.Where(x => x.p.Status == Status.Active);
+            }
+            //Paging
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Skip(0).Take(10).Select(x => new PrinterVm()
+                {
+                    Id = x.p.Id,
+                    UserId = x.pou.UserId,
+                    Name = x.p.Name,
+                    Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
+                }).ToListAsync();
+
+            //4. Select and projection
+            var pagedResult = new PagedResult<PrinterVm>()
+            {
+                TotalRecords = totalRow,
+                PageSize = 10,
+                PageIndex = 1,
                 Items = data
             };
             return pagedResult;
