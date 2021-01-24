@@ -142,7 +142,7 @@ namespace eShopSolution.Application.System.Users
             }
             if (await _userManager.FindByEmailAsync(request.Email) != null)
             {
-                return new ApiErrorResult<bool>("Email đã tồn tại");
+                return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
 
             user = new AppUser()
@@ -156,11 +156,6 @@ namespace eShopSolution.Application.System.Users
             if (result.Succeeded)
             {
                 return new ApiSuccessResult<bool>();
-            }
-            else
-            {
-                var errors = result.Errors;
-                var message = string.Join(", ", errors);
             }
             return new ApiErrorResult<bool>("Đăng ký không thành công");
         }
