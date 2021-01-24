@@ -15,6 +15,14 @@ using Microsoft.OpenApi.Models;
 using PrinterShareSolution.Application.Common;
 using PrinterShareSolution.Application.Catalog.Printers;
 using PrinterShareSolution.Application.Catalog.OrderPrinterFiles;
+using eShopSolution.Application.System.Users;
+using PrinterShareSolution.Application.System.Users;
+using eShopSolution.Application.System.Roles;
+using PrinterShareSolution.Application.System.Roles;
+using FluentValidation.AspNetCore;
+using PrintShareSolution.ViewModels.System.Users;
+using PrintShareSolution.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace PrinterShareSolution.BackendApi
 {
@@ -33,6 +41,10 @@ namespace PrinterShareSolution.BackendApi
             services.AddDbContext<PrinterShareDbContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
 
+            services.AddIdentity<AppUser, AppRole>()
+            .AddEntityFrameworkStores<PrinterShareDbContext>()
+            .AddDefaultTokenProviders();
+
             services.AddControllersWithViews();
 
             //Declare DI
@@ -40,6 +52,16 @@ namespace PrinterShareSolution.BackendApi
 
             services.AddTransient<IPrinterService, PrinterService>();
             services.AddTransient<IOrderPrintFileService, OrderPrintFileService>();
+
+            services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
+            services.AddTransient<SignInManager<AppUser>, SignInManager<AppUser>>();
+            services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
+
+            services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<IUserService, UserService>();
+
+            services.AddControllers()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<LoginRequestValidator>());
 
             services.AddSwaggerGen(c =>
             {
