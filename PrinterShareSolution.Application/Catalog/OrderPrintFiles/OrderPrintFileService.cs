@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using PrintShareSolution.ViewModels.Common;
+using Microsoft.AspNetCore.Hosting;
 
 namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 {
@@ -27,6 +28,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
         {
             _context = context;
             _storageService = storageService;
+            //_userContentFolder = Path.Combine(webHostEnvironment.WebRootPath, USER_CONTENT_FOLDER_NAME);
         }
 
         public async Task<int> Create(OrderPrintFileCreateRequest request)
@@ -105,7 +107,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     FileName = x.opf.FileName,
                     FileSize = x.opf.FileSize,
                     ActionOrder = (PrintShareSolution.ViewModels.Enums.ActionOrder)x.opf.ActionOrder,
-                    DateTime = x.opf.DateTime
+                    DateTime = x.opf.DateTime,
+                    FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + x.opf.FilePath
                 }).ToListAsync();
 
             //4. Select and projection

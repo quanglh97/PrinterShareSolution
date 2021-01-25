@@ -14,6 +14,7 @@ namespace PrintShareSolution.ViewModels.Catalog.OrderPrintFile
         public long FileSize { get; set; }
         public ActionOrder ActionOrder { get; set; }
         public DateTime DateTime { get; set; }
+        public string FilePath { get; set; }
 
     }
 }

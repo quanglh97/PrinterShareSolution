@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>b621b66d-4188-4bea-8c44-b1097c410fb3</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Properties\ServiceDependencies\" />
     <Folder Include="wwwroot\user-content\" />
   </ItemGroup>
 
