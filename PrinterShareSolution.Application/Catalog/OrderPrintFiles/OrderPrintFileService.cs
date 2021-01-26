@@ -156,6 +156,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
         {
             var orderPrintFile = await _context.OrderPrintFiles.FindAsync(id);
 
+            if(orderPrintFile == null) throw new PrinterShareException($"Printed Id can not found");
             var orderPrintFileViewModel = new OrderPrintFileVm()
             {
                 Id = orderPrintFile.Id,
@@ -164,8 +165,9 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 FileName = orderPrintFile.FileName,
                 ActionOrder = (PrintShareSolution.ViewModels.Enums.ActionOrder)orderPrintFile.ActionOrder,
                 DateTime = orderPrintFile.DateTime,
-                FileSize = orderPrintFile.FileSize
-            };
+                FileSize = orderPrintFile.FileSize,
+                FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + orderPrintFile.FilePath
+        };
             return orderPrintFileViewModel;
         }
 
@@ -182,7 +184,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 foreach (var historyOfUser in historyOfUsers)
                 {
                     TimeSpan span = now.Subtract(historyOfUser.DateTime);
-                    if(span.Days >= 0)
+                    if(span.Days >= 10)
                     {
                         _context.HistoryOfUsers.Remove(historyOfUser);
                     }
