@@ -7,8 +7,8 @@ namespace PrintShareSolution.ViewModels.Catalog.OrderPrintFile
 {
     public class GetOrderPrintFilePagingRequest : PagingRequestBase
     {
-        public Guid UserId { get; set; }
-        public int  PrinterId { get; set; }
+        public string MyId { get; set; }
+       // public int  PrinterId { get; set; }
     
     }
 }

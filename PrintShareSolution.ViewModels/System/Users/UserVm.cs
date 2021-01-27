@@ -16,7 +16,7 @@ namespace PrintShareSolution.ViewModels.System.Users
         public string PhoneNumber { get; set; }
 
         [Display(Name = "Tài khoản")]
-        public string UserName { get; set; }
+        public string myId { get; set; }
 
         [Display(Name = "Email")]
         public string Email { get; set; }

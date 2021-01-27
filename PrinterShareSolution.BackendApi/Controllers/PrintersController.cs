@@ -21,24 +21,18 @@ namespace PrinterShareSolution.BackendApi.Controllers
             _printerService = printerService;
         }
 
-/*        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{printerId}")]
+        public async Task<IActionResult> GetById(int printerId)
         {
-            return Ok("Khi bố mày test thì chỉ có thể là Test Ok");
-        }*/
-
-        [HttpGet("{printerId}/{userId}")]
-        public async Task<IActionResult> GetById(int printerId, Guid userId)
-        {
-            var printer = await _printerService.GetById(printerId, userId);
+            var printer = await _printerService.GetById(printerId);
             if (printer == null)
                 return BadRequest("Cannot find printer");
             return Ok(printer);
         }
 
         [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromForm] PrinterCreateRequest request)
+        //[Consumes("multipart/form-data")]
+        public async Task<IActionResult> Create([FromBody] PrinterCreateRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -48,13 +42,13 @@ namespace PrinterShareSolution.BackendApi.Controllers
             if (printerId == 0)
                 return BadRequest();
 
-            var printer = await _printerService.GetById(printerId, request.UserId);
+            var printer = await _printerService.GetById(printerId);
 
             return CreatedAtAction(nameof(GetById), new { id = printerId }, printer);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromForm] PrinterDeleteRequest request)
+        public async Task<IActionResult> Delete([FromBody] PrinterDeleteRequest request)
         {
             var affectedResult = await _printerService.Delete(request);
             if (affectedResult == 0)
@@ -63,8 +57,8 @@ namespace PrinterShareSolution.BackendApi.Controllers
         }
 
         [HttpPut("{printerId}")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Update([FromRoute] int printerId, [FromForm] PrinterUpdateRequest request)
+        //[Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update([FromRoute] int printerId, [FromBody] PrinterUpdateRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -83,6 +77,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
             var printers = await _printerService.GetStatusPaging(request);
             return Ok(printers);
         }
+
         [HttpGet("keyWord")]
         public async Task<IActionResult> GetKeyWordPaging(string keyWord)
         {

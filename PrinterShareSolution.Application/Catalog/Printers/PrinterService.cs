@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using PrintShareSolution.Data.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace PrinterShareSolution.Application.Catalog.Printers
 {
@@ -18,12 +19,17 @@ namespace PrinterShareSolution.Application.Catalog.Printers
     {
         private readonly PrinterShareDbContext  _context;
         private readonly IStorageService _storageService;
+        private readonly UserManager<AppUser> _userManager;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
-        public PrinterService(PrinterShareDbContext context, IStorageService storageService)
+        public PrinterService(
+            PrinterShareDbContext context, 
+            IStorageService storageService,
+            UserManager<AppUser> userManager)
         {
             _context = context;
             _storageService = storageService;
+            _userManager = userManager;
         }
 
         public async Task<int> Create(PrinterCreateRequest request)
@@ -32,11 +38,11 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             var printerOfUser = new List<ListPrinterOfUser>();
             foreach (var user in users)
             {
-                if (user.Id == request.UserId)
+                if (user.UserName == request.MyId)
                 {
                     printerOfUser.Add(new ListPrinterOfUser()
                     {
-                        UserId = request.UserId,
+                        UserId = user.Id,
                     });
                 }
             }
@@ -55,8 +61,9 @@ namespace PrinterShareSolution.Application.Catalog.Printers
         public async Task<int> Update(PrinterUpdateRequest request)
         {
             var printer = await _context.Printers.FindAsync(request.PrinterId);
+            var user = await _userManager.FindByNameAsync(request.MyId);
             var printerOfUser = await _context.ListPrinterOfUsers.FirstOrDefaultAsync(
-                 x => x.PrinterId == request.PrinterId && x.UserId == request.UserId);
+                 x => x.PrinterId == request.PrinterId && x.UserId == user.Id);
             if (printerOfUser == null||printer == null) throw new PrinterShareException($"Cannot Update this printer: {request.PrinterId}");
 
             printer.Status = (PrintShareSolution.Data.Enums.Status)request.Status;
@@ -66,13 +73,13 @@ namespace PrinterShareSolution.Application.Catalog.Printers
 
         public async Task<int> Delete(PrinterDeleteRequest request)
         {
-            var userId = await _context.Users.FindAsync(request.UserId);
+            var user = await _userManager.FindByNameAsync(request.MyId);
             var printer = await _context.Printers.FindAsync(request.PrinterId);
             if (printer == null) throw new PrinterShareException($"Cannot find a printer : {request.PrinterId}");
-            else if (userId == null) throw new PrinterShareException($"Cannot have user: {request.UserId}");
+            else if (user == null) throw new PrinterShareException($"Cannot have user: {request.MyId}");
 
             var printerOfUser = await _context.ListPrinterOfUsers.FirstOrDefaultAsync(
-                x => x.PrinterId == request.PrinterId && x.UserId == request.UserId);
+                x => x.PrinterId == request.PrinterId && x.UserId == user.Id);
 
             if (printerOfUser == null) throw new PrinterShareException($"This user have not this printer:");
             else _context.Printers.Remove(printer);
@@ -80,18 +87,23 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<PrinterVm> GetById(int printerId, Guid userId)
+        public async Task<PrinterVm> GetById(int printerId)
         {
-            var printer = await _context.Printers.FindAsync(printerId);
-            var printerOfUser = await _context.ListPrinterOfUsers.FirstOrDefaultAsync(x => x.PrinterId == printerId
-            && x.UserId == userId);
+            var query = from p in _context.Printers
+                        join pou in _context.ListPrinterOfUsers on p.Id equals pou.PrinterId
+                        join u in _context.Users on pou.UserId equals u.Id
+                        select new { p, pou, u };
+
+            var printer = query.Where(x => x.p.Id == printerId).Single();
+            
+            int withOutWarning = await query.CountAsync();
 
             var printerViewModel = new PrinterVm()
             {
-                Id = printer.Id,
-                UserId = printerOfUser.UserId,
-                Name = printer.Name,
-                Status = (PrintShareSolution.ViewModels.Enums.Status)printer.Status,
+                Id = printer.p.Id,
+                myId = printer.u.UserName,
+                Name = printer.p.Name,
+                Status = (PrintShareSolution.ViewModels.Enums.Status)printer.p.Status,
 
             };
             return printerViewModel;
@@ -100,9 +112,10 @@ namespace PrinterShareSolution.Application.Catalog.Printers
         public async Task<PagedResult<PrinterVm>> GetStatusPaging(GetPrinterPagingRequest request)
         {
             //1. Select join
-            var query = from p in _context.Printers 
+            var query = from p in _context.Printers
                         join pou in _context.ListPrinterOfUsers on p.Id equals pou.PrinterId
-                        select new { p, pou };
+                        join u in _context.Users on pou.UserId equals u.Id
+                        select new { p, pou, u };
 
             //2. filter
             //where p.Status == (PrintShareSolution.Data.Enums.Status)request.Status
@@ -117,7 +130,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 .Select(x => new PrinterVm()
                 {
                     Id = x.p.Id,
-                    UserId = x.pou.UserId,
+                    myId = x.u.UserName,
                     Name = x.p.Name, 
                     Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
                 }).ToListAsync();
@@ -154,7 +167,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 if(query.Count() == 0)
                 {
                     query = queryTemp;
-                    query = query.Where(x => x.u.Id.ToString().ToLower().Contains(KeyWord.ToLower()));
+                    query = query.Where(x => x.u.FullName.ToString().ToLower().Contains(KeyWord.ToLower()));
                 }
                     query = query.Where(x => x.p.Status == Status.Active);
             }
@@ -164,7 +177,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             var data = await query.Skip(0).Take(10).Select(x => new PrinterVm()
                 {
                     Id = x.p.Id,
-                    UserId = x.pou.UserId,
+                    myId = x.u.UserName,
                     Name = x.p.Name,
                     Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
                 }).ToListAsync();

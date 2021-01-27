@@ -50,14 +50,16 @@ namespace PrinterShareSolution.BackendApi.Controllers
             return Ok(result);
         }
 
+
         //PUT: http://localhost/api/users/id
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] UserUpdateRequest request)
+        [HttpPut("Update/{myId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Update(string myId, [FromBody] UserUpdateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _userService.Update(id, request);
+            var result = await _userService.Update(myId, request);
             if (!result.IsSuccessed)
             {
                 return BadRequest(result);
@@ -65,7 +67,8 @@ namespace PrinterShareSolution.BackendApi.Controllers
             return Ok(result);
         }
 
-        [HttpPut("{id}/roles")]
+/*        [HttpPut("{id}/roles")]
+        [AllowAnonymous]
         public async Task<IActionResult> RoleAssign(Guid id, [FromBody] RoleAssignRequest request)
         {
             if (!ModelState.IsValid)
@@ -77,27 +80,30 @@ namespace PrinterShareSolution.BackendApi.Controllers
                 return BadRequest(result);
             }
             return Ok(result);
-        }
+        }*/
 
         //http://localhost/api/users/paging?pageIndex=1&pageSize=10&keyword=
         [HttpGet("paging")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllPaging([FromQuery] GetUserPagingRequest request)
         {
-            var products = await _userService.GetUsersPaging(request);
-            return Ok(products);
+            var users = await _userService.GetUsersPaging(request);
+            return Ok(users);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        [HttpGet("{myId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetById(string myId)
         {
-            var user = await _userService.GetById(id);
+            var user = await _userService.GetById(myId);
             return Ok(user);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("{myId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Delete(string myId)
         {
-            var result = await _userService.Delete(id);
+            var result = await _userService.Delete(myId);
             return Ok(result);
         }
     }

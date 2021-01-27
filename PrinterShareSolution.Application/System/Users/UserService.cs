@@ -24,6 +24,8 @@ namespace eShopSolution.Application.System.Users
         private readonly RoleManager<AppRole> _roleManager;
         private readonly IConfiguration _config;
 
+        private static Random random = new Random();
+
         public UserService(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             RoleManager<AppRole> roleManager,
@@ -65,9 +67,9 @@ namespace eShopSolution.Application.System.Users
             return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
-        public async Task<ApiResult<bool>> Delete(Guid id)
+        public async Task<ApiResult<bool>> Delete(string myId)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.FindByNameAsync(myId);
             if (user == null)
             {
                 return new ApiErrorResult<bool>("User không tồn tại");
@@ -79,9 +81,9 @@ namespace eShopSolution.Application.System.Users
             return new ApiErrorResult<bool>("Xóa không thành công");
         }
 
-        public async Task<ApiResult<UserVm>> GetById(Guid id)
+        public async Task<ApiResult<UserVm>> GetById(string myId)
         {
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.FindByNameAsync(myId);
             if (user == null)
             {
                 return new ApiErrorResult<UserVm>("User không tồn tại");
@@ -93,7 +95,7 @@ namespace eShopSolution.Application.System.Users
                 PhoneNumber = user.PhoneNumber,      
                 Id = user.Id,
                 FullName = user.FullName,
-                UserName = user.UserName,
+                myId = user.UserName,
                 Roles = roles
             };
             return new ApiSuccessResult<UserVm>(userVm);
@@ -117,7 +119,7 @@ namespace eShopSolution.Application.System.Users
                 {
                     Email = x.Email,
                     PhoneNumber = x.PhoneNumber,
-                    UserName = x.UserName,
+                    myId = x.UserName,
                     FullName = x.FullName,
                     Id = x.Id,
                 }).ToListAsync();
@@ -133,31 +135,45 @@ namespace eShopSolution.Application.System.Users
             return new ApiSuccessResult<PagedResult<UserVm>>(pagedResult);
         }
 
-        public async Task<ApiResult<bool>> Register(RegisterRequest request)
+        public async Task<ApiResult<UserVm>> Register(RegisterRequest request)
         {
-            var user = await _userManager.FindByNameAsync(request.UserName);
-            if (user != null)
+            //request.UserName = RandomString(8);
+            var userName = RandomString(8);
+            var phoneNumber = RandomString(10);
+            //var user = await _userManager.FindByNameAsync(request.UserName);
+            var user = await _userManager.FindByNameAsync(userName);
+            while (user != null)
             {
-                return new ApiErrorResult<bool>("Tài khoản đã tồn tại");
-            }
+                //request.UserName = RandomString(8);
+                userName = RandomString(8);
+                user = await _userManager.FindByNameAsync(userName);
+            } ;
             if (await _userManager.FindByEmailAsync(request.Email) != null)
             {
-                return new ApiErrorResult<bool>("Emai đã tồn tại");
+                return new ApiErrorResult<UserVm>("Emai đã tồn tại");
             }
 
             user = new AppUser()
             {
                 Email = request.Email,
                 FullName = request.FullName,
-                UserName = request.UserName,
-                PhoneNumber = request.PhoneNumber
+                UserName = userName, 
+                PhoneNumber = phoneNumber
             };
-            var result = await _userManager.CreateAsync(user, request.Password);
+            var result = await _userManager.CreateAsync(user, "Aa12345@");
+            var userVm = new UserVm()
+            {
+                FullName = user.FullName,
+                Email = user.Email,
+                myId = user.UserName,
+                PhoneNumber = user.PhoneNumber,
+                Id = user.Id
+            };
             if (result.Succeeded)
             {
-                return new ApiSuccessResult<bool>();
+                return new ApiSuccessResult< UserVm > (userVm);
             }
-            return new ApiErrorResult<bool>("Đăng ký không thành công");
+            return new ApiErrorResult<UserVm>("Đăng ký không thành công");
         }
 
         public async Task<ApiResult<bool>> RoleAssign(Guid id, RoleAssignRequest request)
@@ -189,13 +205,13 @@ namespace eShopSolution.Application.System.Users
             return new ApiSuccessResult<bool>();
         }
 
-        public async Task<ApiResult<bool>> Update(Guid id, UserUpdateRequest request)
+        public async Task<ApiResult<bool>> Update(string myId, UserUpdateRequest request)
         {
-            if (await _userManager.Users.AnyAsync(x => x.Email == request.Email && x.Id != id))
+            if (await _userManager.Users.AnyAsync(x => x.Email == request.Email && x.UserName != myId))
             {
                 return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
-            var user = await _userManager.FindByIdAsync(id.ToString());
+            var user = await _userManager.FindByNameAsync(myId);
             user.Email = request.Email;
             user.FullName = request.FullName;
             user.PhoneNumber = request.PhoneNumber;
@@ -206,6 +222,14 @@ namespace eShopSolution.Application.System.Users
                 return new ApiSuccessResult<bool>();
             }
             return new ApiErrorResult<bool>("Cập nhật không thành công");
+        }
+
+        
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

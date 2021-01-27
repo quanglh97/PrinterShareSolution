@@ -22,7 +22,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromForm] OrderPrintFileCreateRequest request)
+        public async Task<IActionResult> Create([FromBody] OrderPrintFileCreateRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -38,7 +38,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromForm] OrderPrintFileDeleteRequest request)
+        public async Task<IActionResult> Delete([FromBody] OrderPrintFileDeleteRequest request)
         {
             var affectedResult = await _orderPrintFileService.Delete(request);
             if (affectedResult == 0)
@@ -49,7 +49,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
         [HttpGet("Command")]
         public async Task<IActionResult> GetCommandPaging([FromQuery] GetOrderPrintFilePagingRequest request)
         {
-            var products = await _orderPrintFileService.GetByPrinterId(request);
+            var products = await _orderPrintFileService.GetByMyId(request);
             return Ok(products);
         }
 
@@ -62,10 +62,10 @@ namespace PrinterShareSolution.BackendApi.Controllers
             return Ok(printer);
         }
 
-        [HttpGet("RefreshHistory/{userId}")]
-        public async Task<IActionResult> Get(Guid userId)
+        [HttpGet("RefreshHistory/{myId}")]
+        public async Task<IActionResult> Get(string myId)
         {
-            var affectedResult = await _orderPrintFileService.RefreshHistory(userId);
+            var affectedResult = await _orderPrintFileService.RefreshHistory(myId);
             if (affectedResult == 0)
                 return BadRequest(); 
             return Ok();

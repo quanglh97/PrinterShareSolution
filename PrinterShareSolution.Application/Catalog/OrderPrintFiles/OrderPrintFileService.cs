@@ -15,19 +15,25 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using PrintShareSolution.ViewModels.Common;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 {
     public class OrderPrintFileService : IOrderPrintFileService
     {
+        private readonly UserManager<AppUser> _userManager;
         private readonly PrinterShareDbContext _context;
         private readonly IStorageService _storageService;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
-        public OrderPrintFileService(PrinterShareDbContext context, IStorageService storageService)
+        public OrderPrintFileService(
+            PrinterShareDbContext context, 
+            IStorageService storageService,
+            UserManager<AppUser> userManager)
         {
             _context = context;
             _storageService = storageService;
+            _userManager = userManager;
             //_userContentFolder = Path.Combine(webHostEnvironment.WebRootPath, USER_CONTENT_FOLDER_NAME);
         }
 
@@ -37,9 +43,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             {
                 var printer = await _context.Printers.FindAsync(request.PrinterId);
                 if(printer == null || printer.Status != Status.Active) throw new PrinterShareException($"printer not active: {request.PrinterId}");
+                var user = await _userManager.FindByNameAsync(request.MyId);
+                if (user == null) throw new PrinterShareException("$this user is invalid");
                 var orderPrintFile = new OrderPrintFile()
                 {
-                    UserId = request.UserId,
+                    UserId = user.Id,
                     PrinterId = request.PrinterId,
                     ActionOrder = (PrintShareSolution.Data.Enums.ActionOrder)request.ActionOrder,
                     DateTime = DateTime.Now,
@@ -50,13 +58,15 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 
                 //Create History Order Of User
                 var actionOrder = ActionHistory.OrderPrintFile;
-                if(request.ActionOrder != PrintShareSolution.ViewModels.Enums.ActionOrder.PrintFile)
+                if (request.ActionOrder == PrintShareSolution.ViewModels.Enums.ActionOrder.PrintFile)
                 {
-                    actionOrder = ActionHistory.OrderSendFile;
+                    actionOrder = ActionHistory.OrderPrintFile;
                 }
+                else
+                    actionOrder = ActionHistory.OrderSendFile;
                 var historyOfUser = new HistoryOfUser()
                 {
-                    UserId = request.UserId,
+                    UserId = user.Id,
                     PrinterId = request.PrinterId,
                     FileName = request.FileName,
                     ActionHistory = actionOrder,
@@ -86,14 +96,17 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             return await _context.SaveChangesAsync();
         }
 
-        public async Task<PagedResult<OrderPrintFileVm>> GetByPrinterId(GetOrderPrintFilePagingRequest request)
+        public async Task<PagedResult<OrderPrintFileVm>> GetByMyId(GetOrderPrintFilePagingRequest request)
         {
             //1.Select join
             var query = from opf in _context.OrderPrintFiles
                         join p in _context.Printers on opf.PrinterId equals p.Id
                         join lpou in _context.ListPrinterOfUsers on p.Id equals lpou.PrinterId
-                        where opf.PrinterId == request.PrinterId && lpou.UserId == request.UserId
-                        select new { opf, p, lpou };
+                        join u in _context.Users on  lpou.UserId equals u.Id
+                        select new { opf, p, lpou, u };
+
+            //filter
+            query = query.Where(x => x.u.UserName == request.MyId);
 
             //3. Paging
             int totalRow = await query.CountAsync();
@@ -104,6 +117,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     Id = x.opf.Id,
                     UserId = x.lpou.UserId,
                     PrinterId = x.p.Id,
+                    PrinterName = x.p.Name,
                     FileName = x.opf.FileName,
                     FileSize = x.opf.FileSize,
                     ActionOrder = (PrintShareSolution.ViewModels.Enums.ActionOrder)x.opf.ActionOrder,
@@ -122,25 +136,26 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 
             //Create History DO Order Of User
 
-            var orderPrintFiles =  await _context.OrderPrintFiles.Where(i => i.PrinterId == request.PrinterId).ToListAsync();
-            foreach (var orderPrintFile in orderPrintFiles)
+            //var orderPrintFiles =  await _context.OrderPrintFiles.Where(i => i.PrinterId == request.PrinterId).ToListAsync();
+            foreach (var orderPrintFile in query)
             {
                 var actionDo = ActionHistory.PrintFile;
-                if (orderPrintFile.ActionOrder != ActionOrder.PrintFile)
+                if (orderPrintFile.opf.ActionOrder != ActionOrder.PrintFile)
                 {
                     actionDo = ActionHistory.ReceiveFile;
                 }
+                else actionDo = ActionHistory.PrintFile;
                 var historyOfUser = new HistoryOfUser()
                 {
-                    UserId = request.UserId,
-                    PrinterId = request.PrinterId,
-                    FileName = orderPrintFile.FileName,
+                    UserId = orderPrintFile.lpou.UserId,
+                    PrinterId = orderPrintFile.opf.PrinterId,
+                    FileName = orderPrintFile.opf.FileName,
                     ActionHistory = actionDo,
                     DateTime = DateTime.Now
                 };
-                _context.HistoryOfUsers.Add(historyOfUser);
-                await _context.SaveChangesAsync();
+                _context.HistoryOfUsers.Add(historyOfUser);       
             }
+            await _context.SaveChangesAsync();
             return pagedResult;
         }
 
@@ -155,13 +170,14 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
         public async Task<OrderPrintFileVm> GetById(int id) 
         {
             var orderPrintFile = await _context.OrderPrintFiles.FindAsync(id);
-
             if(orderPrintFile == null) throw new PrinterShareException($"Printed Id can not found");
+            var printer = await _context.Printers.FindAsync(orderPrintFile.PrinterId);
             var orderPrintFileViewModel = new OrderPrintFileVm()
             {
                 Id = orderPrintFile.Id,
                 UserId = orderPrintFile.UserId,
                 PrinterId = orderPrintFile.PrinterId,
+                PrinterName = printer.Name,
                 FileName = orderPrintFile.FileName,
                 ActionOrder = (PrintShareSolution.ViewModels.Enums.ActionOrder)orderPrintFile.ActionOrder,
                 DateTime = orderPrintFile.DateTime,
@@ -171,11 +187,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             return orderPrintFileViewModel;
         }
 
-        public async Task<int> RefreshHistory(Guid UserId)
+        public async Task<int> RefreshHistory(string MyId)
         {
             //var userId = await _context.Users.FindAsync(request.UserId);
-            var userId = await _context.Users.FindAsync(UserId);
-            if (userId == null) throw new PrinterShareException($"This UserId is invalid");
+            var user = await _userManager.FindByNameAsync(MyId);
+            if (user == null) throw new PrinterShareException($"This Your Id is invalid");
             //else if (userId == null) throw new PrinterShareException($"Cannot have user: {request.UserId}");
             else
             {
