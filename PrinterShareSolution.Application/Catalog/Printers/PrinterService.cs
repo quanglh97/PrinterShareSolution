@@ -132,6 +132,8 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                     Id = x.p.Id,
                     myId = x.u.UserName,
                     Name = x.p.Name, 
+                    FullName = x.u.FullName,
+                    Email = x. u.Email,
                     Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
                 }).ToListAsync();
 
@@ -179,6 +181,8 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                     Id = x.p.Id,
                     myId = x.u.UserName,
                     Name = x.p.Name,
+                    FullName = x.u.FullName,
+                    Email = x.u.Email,
                     Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
                 }).ToListAsync();
 
