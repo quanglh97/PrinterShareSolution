@@ -49,7 +49,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 {
                     UserId = user.Id,
                     PrinterId = request.PrinterId,
-                    ActionOrder = (PrintShareSolution.Data.Enums.ActionOrder)request.ActionOrder,
+                   
                     DateTime = DateTime.Now,
                     FileSize = request.ThumbnailFile.Length,
                     FileName = request.FileName,
@@ -57,19 +57,13 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 };
 
                 //Create History Order Of User
-                var actionOrder = ActionHistory.OrderPrintFile;
-                if (request.ActionOrder == PrintShareSolution.ViewModels.Enums.ActionOrder.PrintFile)
-                {
-                    actionOrder = ActionHistory.OrderPrintFile;
-                }
-                else
-                    actionOrder = ActionHistory.OrderSendFile;
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = user.Id,
+                    UserReceive = "",
                     PrinterId = request.PrinterId,
                     FileName = request.FileName,
-                    ActionHistory = actionOrder,
+                    ActionHistory = ActionHistory.OrderPrintFile,
                     DateTime = DateTime.Now
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);
@@ -83,7 +77,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 
         public async Task<int> Delete(OrderPrintFileDeleteRequest request)
         {
-            //var userId = await _context.Users.FindAsync(request.UserId);
+            var user = await _userManager.FindByNameAsync(request.MyId);
+            if (user == null) throw new PrinterShareException($"user is invalid: {request.MyId}");
             var orderPrintFile = await _context.OrderPrintFiles.FindAsync(request.Id);
             if (orderPrintFile == null) throw new PrinterShareException($"Cannot find a orderPrintFile : {request.Id}");
             //else if (userId == null) throw new PrinterShareException($"Cannot have user: {request.UserId}");
@@ -115,12 +110,12 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 .Select(x => new OrderPrintFileVm()
                 {
                     Id = x.opf.Id,
-                    UserId = x.lpou.UserId,
+                    UserId = x.u.Id,
                     PrinterId = x.p.Id,
                     PrinterName = x.p.Name,
                     FileName = x.opf.FileName,
                     FileSize = x.opf.FileSize,
-                    ActionOrder = (PrintShareSolution.ViewModels.Enums.ActionOrder)x.opf.ActionOrder,
+                 
                     DateTime = x.opf.DateTime,
                     FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + x.opf.FilePath
                 }).ToListAsync();
@@ -139,18 +134,13 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             //var orderPrintFiles =  await _context.OrderPrintFiles.Where(i => i.PrinterId == request.PrinterId).ToListAsync();
             foreach (var orderPrintFile in query)
             {
-                var actionDo = ActionHistory.PrintFile;
-                if (orderPrintFile.opf.ActionOrder != ActionOrder.PrintFile)
-                {
-                    actionDo = ActionHistory.ReceiveFile;
-                }
-                else actionDo = ActionHistory.PrintFile;
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = orderPrintFile.lpou.UserId,
+                    UserReceive = "",
                     PrinterId = orderPrintFile.opf.PrinterId,
                     FileName = orderPrintFile.opf.FileName,
-                    ActionHistory = actionDo,
+                    ActionHistory = ActionHistory.PrintFile,
                     DateTime = DateTime.Now
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);       
@@ -179,11 +169,10 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 PrinterId = orderPrintFile.PrinterId,
                 PrinterName = printer.Name,
                 FileName = orderPrintFile.FileName,
-                ActionOrder = (PrintShareSolution.ViewModels.Enums.ActionOrder)orderPrintFile.ActionOrder,
                 DateTime = orderPrintFile.DateTime,
                 FileSize = orderPrintFile.FileSize,
                 FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + orderPrintFile.FilePath
-        };
+            };
             return orderPrintFileViewModel;
         }
 

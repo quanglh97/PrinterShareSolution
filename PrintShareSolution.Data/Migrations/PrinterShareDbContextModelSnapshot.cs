@@ -162,7 +162,6 @@ namespace PrintShareSolution.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -180,7 +179,7 @@ namespace PrintShareSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "088403e4-00bc-4d84-859a-2908db823523",
+                            ConcurrencyStamp = "50b3ed4d-ede2-482a-a9f4-006c8a1d6a2f",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -249,14 +248,14 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "fbdab5b6-9325-46a7-a8ec-b96341e1aa55",
+                            ConcurrencyStamp = "6b805687-ad2d-4bd5-b580-1109eb525e5c",
                             Email = "quanglehoi@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Lê Hội Quang",
                             LockoutEnabled = false,
                             NormalizedEmail = "quanglehoi@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEJvWD/jsiE0oP7oUezlCk/y8XkbSdjB+8QM8tHLHFYp/SB6p1RKJ/bG2nbx+DxUL0A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPaJlPghtBdSBgS6hEUbCq2Ddx0iDHgVEU9R4KgGe8FNFo51psJ1Nq0HMeKYQAgbRw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -322,9 +321,10 @@ namespace PrintShareSolution.Data.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                    b.Property<string>("UserReceive")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("PrinterId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -335,7 +335,7 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = 1,
                             ActionHistory = 0,
-                            DateTime = new DateTime(2021, 1, 23, 21, 33, 12, 633, DateTimeKind.Local).AddTicks(7411),
+                            DateTime = new DateTime(2021, 1, 28, 14, 46, 40, 41, DateTimeKind.Local).AddTicks(6655),
                             FileName = "C://xxx.docx",
                             PrinterId = 1,
                             UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
@@ -376,11 +376,6 @@ namespace PrintShareSolution.Data.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("ActionOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
@@ -415,7 +410,6 @@ namespace PrintShareSolution.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ActionOrder = 1,
                             DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FileName = "xxx.docx",
                             FilePath = "C://xxx.docx",
@@ -426,13 +420,72 @@ namespace PrintShareSolution.Data.Migrations
                         new
                         {
                             Id = 2,
-                            ActionOrder = 0,
                             DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FileName = "xxx.docx",
                             FilePath = "C://xxx.docx",
                             FileSize = 0L,
                             PrinterId = 2,
                             UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")
+                        });
+                });
+
+            modelBuilder.Entity("PrintShareSolution.Data.Entities.OrderSendFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserNameReceive")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("OrderSendFiles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileName = "xxx.docx",
+                            FilePath = "C://xxx.docx",
+                            FileSize = 0L,
+                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
+                            UserNameReceive = "KhaiTb"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FileName = "xxx.docx",
+                            FilePath = "C://xxx.docx",
+                            FileSize = 0L,
+                            UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
+                            UserNameReceive = "KhaiTb"
                         });
                 });
 
@@ -485,12 +538,6 @@ namespace PrintShareSolution.Data.Migrations
 
             modelBuilder.Entity("PrintShareSolution.Data.Entities.HistoryOfUser", b =>
                 {
-                    b.HasOne("PrintShareSolution.Data.Entities.Printer", "Printer")
-                        .WithMany("HistoryOfUsers")
-                        .HasForeignKey("PrinterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PrintShareSolution.Data.Entities.AppUser", "AppUser")
                         .WithMany("HistoryOfUsers")
                         .HasForeignKey("UserId")
@@ -498,8 +545,6 @@ namespace PrintShareSolution.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("AppUser");
-
-                    b.Navigation("Printer");
                 });
 
             modelBuilder.Entity("PrintShareSolution.Data.Entities.ListPrinterOfUser", b =>
@@ -540,6 +585,17 @@ namespace PrintShareSolution.Data.Migrations
                     b.Navigation("Printer");
                 });
 
+            modelBuilder.Entity("PrintShareSolution.Data.Entities.OrderSendFile", b =>
+                {
+                    b.HasOne("PrintShareSolution.Data.Entities.AppUser", "AppUser")
+                        .WithMany("OrderSendFiles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AppUser");
+                });
+
             modelBuilder.Entity("PrintShareSolution.Data.Entities.AppUser", b =>
                 {
                     b.Navigation("BlockIds");
@@ -549,12 +605,12 @@ namespace PrintShareSolution.Data.Migrations
                     b.Navigation("ListPrinterOfUsers");
 
                     b.Navigation("OrderPrintFiles");
+
+                    b.Navigation("OrderSendFiles");
                 });
 
             modelBuilder.Entity("PrintShareSolution.Data.Entities.Printer", b =>
                 {
-                    b.Navigation("HistoryOfUsers");
-
                     b.Navigation("ListPrinterOfUsers");
 
                     b.Navigation("OrderPrintFiles");

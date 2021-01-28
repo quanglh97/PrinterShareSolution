@@ -15,12 +15,12 @@ namespace PrintShareSolution.Data.Configurations
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
-
+            builder.Property(x => x.UserReceive);
+            builder.Property(x => x.PrinterId);
             builder.Property(x => x.FileName).HasMaxLength(200).IsRequired();
             builder.Property(x => x.ActionHistory);
             builder.Property(x => x.DateTime);
 
-            builder.HasOne(x => x.Printer).WithMany(x => x.HistoryOfUsers).HasForeignKey(x => x.PrinterId);
             builder.HasOne(x => x.AppUser).WithMany(x => x.HistoryOfUsers).HasForeignKey(x => x.UserId);
             
         }

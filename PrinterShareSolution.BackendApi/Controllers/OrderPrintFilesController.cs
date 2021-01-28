@@ -22,7 +22,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
 
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> Create([FromBody] OrderPrintFileCreateRequest request)
+        public async Task<IActionResult> Create([FromForm] OrderPrintFileCreateRequest request)
         {
             if (!ModelState.IsValid)
             {

@@ -8,21 +8,20 @@ using System.Text;
 
 namespace PrintShareSolution.Data.Configurations
 {
-    class OrderPrintFileConfiguration : IEntityTypeConfiguration<OrderPrintFile>
+    class OrderSendFileConfiguration : IEntityTypeConfiguration<OrderSendFile>
     {
-        public void Configure(EntityTypeBuilder<OrderPrintFile> builder)
+        public void Configure(EntityTypeBuilder<OrderSendFile> builder)
         {
-            builder.ToTable("OrderPrintFiles");
-
+            builder.ToTable("OrderSendFiles");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
-            builder.Property(x => x.DateTime);
-            builder.Property(x=>x.FileName).HasMaxLength(200).IsRequired(true);
+
+            builder.Property(x => x.UserNameReceive).HasMaxLength(8).IsRequired(true);
+            builder.Property(x => x.FileName).HasMaxLength(200).IsRequired(true);
             builder.Property(x => x.FilePath).HasMaxLength(200).IsRequired(true);
             builder.Property(x => x.FileSize);
-
-            builder.HasOne(x => x.Printer).WithMany(x => x.OrderPrintFiles).HasForeignKey(x => x.PrinterId);
-            builder.HasOne(x => x.AppUser).WithMany(x => x.OrderPrintFiles).HasForeignKey(x => x.UserId);
+            builder.Property(x => x.DateTime);
+            builder.HasOne(x => x.AppUser).WithMany(x => x.OrderSendFiles).HasForeignKey(x => x.UserId);
         }
     }
 }

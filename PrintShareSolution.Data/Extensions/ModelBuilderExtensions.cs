@@ -28,10 +28,15 @@ namespace eShopSolution.Data.Extensions
 
             modelBuilder.Entity<OrderPrintFile>().HasData(
                 new OrderPrintFile() 
-                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx", ActionOrder = ActionOrder.PrintFile },
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx" },
                 new OrderPrintFile() 
-                { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx", ActionOrder = ActionOrder.SendFile });
+                { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx"});
 
+            modelBuilder.Entity<OrderSendFile>().HasData(
+                new OrderSendFile()
+                { Id = 1, UserId = adminId, UserNameReceive="KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" },
+                new OrderSendFile()
+                { Id = 2, UserId = adminId, UserNameReceive = "KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" });
 
             modelBuilder.Entity<ListPrinterOfUser>().HasData(
                 new ListPrinterOfUser() { UserId = adminId, PrinterId = 1 },

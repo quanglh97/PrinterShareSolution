@@ -13,5 +13,6 @@ namespace PrintShareSolution.Data.Entities
         public List<OrderPrintFile> OrderPrintFiles { get; set; }
         public List<ListPrinterOfUser> ListPrinterOfUsers { get; set; }
         public List<HistoryOfUser> HistoryOfUsers { get; set; }
+        public List<OrderSendFile> OrderSendFiles { get; set; }
     }
 }

@@ -21,6 +21,7 @@ using PrinterShareSolution.Application.System.Roles;
 using eShopSolution.Application.System.Roles;
 using PrinterShareSolution.Application.System.Users;
 using eShopSolution.Application.System.Users;
+using PrinterShareSolution.Application.Catalog.OrderSendFiles;
 
 namespace PrinterShareSolution.BackendApi
 {
@@ -50,6 +51,7 @@ namespace PrinterShareSolution.BackendApi
 
             services.AddTransient<IPrinterService, PrinterService>();
             services.AddTransient<IOrderPrintFileService, OrderPrintFileService>();
+            services.AddTransient<IOrderSendFileService, OrderSendFileService>();
 
             services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
             services.AddTransient<SignInManager<AppUser>, SignInManager<AppUser>>();

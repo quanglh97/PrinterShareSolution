@@ -103,6 +103,8 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 Id = printer.p.Id,
                 myId = printer.u.UserName,
                 Name = printer.p.Name,
+                FullName = printer.u.FullName,
+                Email = printer.u.Email,
                 Status = (PrintShareSolution.ViewModels.Enums.Status)printer.p.Status,
 
             };
