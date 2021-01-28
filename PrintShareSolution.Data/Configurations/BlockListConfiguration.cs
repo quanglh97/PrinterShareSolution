@@ -16,9 +16,8 @@ namespace PrintShareSolution.Data.Configurations
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
-            builder.Property(x => x.UserBlockedId);
-            builder.Property(x => x.BlackListFilePath).HasMaxLength(200).IsRequired(true);
-
+            builder.Property(x => x.UserBlocked);
+            builder.Property(x => x.BlackListFilePath).HasMaxLength(200);
             builder.HasOne(x => x.AppUser).WithMany(x => x.BlockIds).HasForeignKey(x => x.UserId);
         }
     }

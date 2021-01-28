@@ -34,16 +34,16 @@ namespace eShopSolution.Data.Extensions
 
             modelBuilder.Entity<OrderSendFile>().HasData(
                 new OrderSendFile()
-                { Id = 1, UserId = adminId, UserNameReceive="KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" },
+                { Id = 1, UserId = adminId, ReceiveId="KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" },
                 new OrderSendFile()
-                { Id = 2, UserId = adminId, UserNameReceive = "KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" });
+                { Id = 2, UserId = adminId, ReceiveId = "KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" });
 
             modelBuilder.Entity<ListPrinterOfUser>().HasData(
                 new ListPrinterOfUser() { UserId = adminId, PrinterId = 1 },
                 new ListPrinterOfUser() { UserId = adminId, PrinterId = 2 });
 
             modelBuilder.Entity<BlockList>().HasData(
-                new BlockList() {Id = 1, UserId = adminId, UserBlockedId = clientId , BlackListFilePath = "C://BackList.txt"} );
+                new BlockList() {Id = 1, UserId = adminId, UserBlocked = "DKFAJ56" , BlackListFilePath = "C://BackList.txt"} );
 
             modelBuilder.Entity<HistoryOfUser>().HasData(
                 new HistoryOfUser() 

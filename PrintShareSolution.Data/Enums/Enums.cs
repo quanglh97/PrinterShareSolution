@@ -17,9 +17,9 @@ namespace PrintShareSolution.Data.Enums
     }
     public enum ActionHistory
     {
-        OrderSendFile,
-        OrderPrintFile,
-        ReceiveFile,
-        PrintFile
+        OrderSendFile, //yeu cau gui file 0
+        OrderPrintFile, //yeu cau in file 1
+        ReceiveFile, //nhan file          2
+        PrintFile //in file               3
     }
 }

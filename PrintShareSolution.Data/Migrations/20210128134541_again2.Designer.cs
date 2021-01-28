@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PrintShareSolution.Data.EF;
 
 namespace PrintShareSolution.Data.Migrations
 {
     [DbContext(typeof(PrinterShareDbContext))]
-    partial class PrinterShareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210128134541_again2")]
+    partial class again2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,7 +181,7 @@ namespace PrintShareSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "52c8d680-b379-4a4c-aa44-2020a84ea3a0",
+                            ConcurrencyStamp = "5acc1605-ece9-4c62-8a54-56907ded2628",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -208,9 +210,6 @@ namespace PrintShareSolution.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("LastRequestTime")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -251,15 +250,14 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3c059ad4-d5e5-4382-a87a-9b52048078a4",
+                            ConcurrencyStamp = "82f577ec-f587-429a-933c-859f74eeffdd",
                             Email = "quanglehoi@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Lê Hội Quang",
-                            LastRequestTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             LockoutEnabled = false,
                             NormalizedEmail = "quanglehoi@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBhif0/6HEsXMyYHDMGupnKiJUaT++VldFJr6k3f0cW8V5epu/iBi1chQTWL4p/AJw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEHVHRIyRxRY48w+qU7FK1/vd4lSO4f0cSK2MQlJ6BExocIdPfIQDFRnZu8TuE2GKNQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
@@ -321,11 +319,11 @@ namespace PrintShareSolution.Data.Migrations
                     b.Property<int>("PrinterId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ReceiveId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserReceive")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -338,7 +336,7 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = 1,
                             ActionHistory = 0,
-                            DateTime = new DateTime(2021, 1, 28, 21, 46, 34, 784, DateTimeKind.Local).AddTicks(664),
+                            DateTime = new DateTime(2021, 1, 28, 20, 45, 40, 52, DateTimeKind.Local).AddTicks(9544),
                             FileName = "C://xxx.docx",
                             PrinterId = 1,
                             UserId = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de")

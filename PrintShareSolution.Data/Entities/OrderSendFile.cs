@@ -8,7 +8,7 @@ namespace PrintShareSolution.Data.Entities
     {
         public int Id { get; set; }
         public Guid UserId { get; set; }
-        public string  UserNameReceive { get; set; }
+        public string  ReceiveId { get; set; }
         public string FileName { get; set; }
         public string FilePath { get; set; }
         public long FileSize { get; set; }

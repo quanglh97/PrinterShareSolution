@@ -20,6 +20,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
 {
     public class OrderSendFileService : IOrderSendFileService
     {
+
         private readonly UserManager<AppUser> _userManager;
         private readonly PrinterShareDbContext _context;
         private readonly IStorageService _storageService;
@@ -54,7 +55,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                 var orderSendFile = new OrderSendFile()
                 {
                     UserId = user.Id,
-                    UserNameReceive = request.UserReceive,
+                    ReceiveId = request.UserReceive,
                     DateTime = DateTime.Now,
                     FileSize = request.ThumbnailFile.Length,
                     FileName = request.FileName,
@@ -66,7 +67,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                 {
                     UserId = user.Id,
                     PrinterId = -1,
-                    UserReceive = request.UserReceive,
+                    ReceiveId = request.UserReceive,
                     FileName = request.FileName,
                     ActionHistory = (PrintShareSolution.Data.Enums.ActionHistory)ActionHistory.OrderSendFile,
                     DateTime = DateTime.Now
@@ -99,12 +100,16 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
         {
             var orderSendFile = await _context.OrderSendFiles.FindAsync(id);
             if (orderSendFile == null) throw new PrinterShareException($"this order can not found");
-
+            var user = await _context.Users.FindAsync(orderSendFile.UserId);
+            var receiveUser = await _userManager.FindByNameAsync(orderSendFile.ReceiveId);
             var orderSendFileViewModel = new OrderSendFileVm()
             {
                 Id = orderSendFile.Id,
-                UserId = orderSendFile.UserId,
-                UserReceive = orderSendFile.UserNameReceive,
+                OrderId = user.UserName,
+                OrderName = user.FullName,
+                Email = user.Email,
+                ReceiveId = orderSendFile.ReceiveId,
+                ReceiveName = receiveUser.FullName,
                 FileName = orderSendFile.FileName,
                 DateTime = orderSendFile.DateTime,
                 FileSize = orderSendFile.FileSize,
@@ -115,14 +120,17 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
 
         public async Task<PagedResult<OrderSendFileVm>> GetByMyId(GetOrderSendFilePagingRequest request)
         {
+/*            var UpdateLastRequestUser = await _userManager.FindByNameAsync(request.MyId);
+            UpdateLastRequestUser.LastRequestTime = DateTime.Now;*/
+
             //1.Select join
             var query = from osf in _context.OrderSendFiles
                         join u in _context.Users on osf.UserId equals u.Id
                         select new { osf, u };
 
             //filter
-            query = query.Where(x => x.osf.UserNameReceive == request.MyId);
-
+            query = query.Where(x => x.osf.ReceiveId == request.MyId);
+            var receiveUser = await _userManager.FindByNameAsync(request.MyId);
             //3. Paging
             int totalRow = await query.CountAsync();
             var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
@@ -130,8 +138,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                 .Select(x => new OrderSendFileVm()
                 {
                     Id = x.osf.Id,
-                    UserId = x.u.Id,
-                    UserReceive = x.osf.UserNameReceive,
+                    OrderId = x.u.UserName,
+                    OrderName = x.u.FullName,
+                    Email = x.u.Email,
+                    ReceiveId = x.osf.ReceiveId,
+                    ReceiveName = receiveUser.FullName,
                     FileName = x.osf.FileName,
                     FileSize = x.osf.FileSize,
                     DateTime = x.osf.DateTime,
@@ -155,7 +166,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = orderSendFile.osf.UserId,
-                    UserReceive = orderSendFile.osf.UserNameReceive,
+                    ReceiveId = orderSendFile.osf.ReceiveId,
                     PrinterId = -1,
                     FileName = orderSendFile.osf.FileName,
                     ActionHistory = (PrintShareSolution.Data.Enums.ActionHistory)ActionHistory.ReceiveFile,

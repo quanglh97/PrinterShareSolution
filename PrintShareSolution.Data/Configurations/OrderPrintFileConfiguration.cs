@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PrintShareSolution.Data.Configurations
 {
-    class OrderPrintFileConfiguration : IEntityTypeConfiguration<OrderPrintFile>
+    public class OrderPrintFileConfiguration : IEntityTypeConfiguration<OrderPrintFile>
     {
         public void Configure(EntityTypeBuilder<OrderPrintFile> builder)
         {

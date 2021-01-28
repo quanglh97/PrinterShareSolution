@@ -45,11 +45,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 if(printer == null || printer.Status != Status.Active) throw new PrinterShareException($"printer not active: {request.PrinterId}");
                 var user = await _userManager.FindByNameAsync(request.MyId);
                 if (user == null) throw new PrinterShareException("$this user is invalid");
+                
                 var orderPrintFile = new OrderPrintFile()
                 {
                     UserId = user.Id,
                     PrinterId = request.PrinterId,
-                   
                     DateTime = DateTime.Now,
                     FileSize = request.ThumbnailFile.Length,
                     FileName = request.FileName,
@@ -57,10 +57,17 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 };
 
                 //Create History Order Of User
+                var query = from lpou in _context.ListPrinterOfUsers
+                            where (lpou.PrinterId == request.PrinterId)
+                            select (lpou);
+                var userReceiveId = query.Single().UserId;
+                var userReceive = await _context.Users.FindAsync(userReceiveId);
+                if (userReceive == null) throw new PrinterShareException($"user receive not active:");
+                
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = user.Id,
-                    UserReceive = "",
+                    ReceiveId = userReceive.UserName,
                     PrinterId = request.PrinterId,
                     FileName = request.FileName,
                     ActionHistory = ActionHistory.OrderPrintFile,
@@ -93,15 +100,19 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
 
         public async Task<PagedResult<OrderPrintFileVm>> GetByMyId(GetOrderPrintFilePagingRequest request)
         {
+            var UpdateLastRequestUser = await _userManager.FindByNameAsync(request.MyId);
+            UpdateLastRequestUser.LastRequestTime = DateTime.Now;
+
             //1.Select join
             var query = from opf in _context.OrderPrintFiles
                         join p in _context.Printers on opf.PrinterId equals p.Id
                         join lpou in _context.ListPrinterOfUsers on p.Id equals lpou.PrinterId
-                        join u in _context.Users on  lpou.UserId equals u.Id
-                        select new { opf, p, lpou, u };
+                        join u2 in _context.Users on  lpou.UserId equals u2.Id // user dc yeu cau
+                        join u1 in _context.Users on opf.UserId equals u1.Id //user gui yeu cau
+                        select new { opf, p, lpou, u2, u1 };
 
             //filter
-            query = query.Where(x => x.u.UserName == request.MyId);
+            query = query.Where(x => x.u2.UserName == request.MyId);
 
             //3. Paging
             int totalRow = await query.CountAsync();
@@ -110,7 +121,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 .Select(x => new OrderPrintFileVm()
                 {
                     Id = x.opf.Id,
-                    UserId = x.u.Id,
+                    OrderId = x.u1.UserName,
+                    OrderName = x.u1.FullName,
+                    Email = x.u1.Email,
+                    ReceiveId = x.u2.UserName,
+                    ReceiveName =x.u2.FullName,
                     PrinterId = x.p.Id,
                     PrinterName = x.p.Name,
                     FileName = x.opf.FileName,
@@ -137,7 +152,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = orderPrintFile.lpou.UserId,
-                    UserReceive = "",
+                    ReceiveId = orderPrintFile.u2.UserName,
                     PrinterId = orderPrintFile.opf.PrinterId,
                     FileName = orderPrintFile.opf.FileName,
                     ActionHistory = ActionHistory.PrintFile,
@@ -162,10 +177,19 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             var orderPrintFile = await _context.OrderPrintFiles.FindAsync(id);
             if(orderPrintFile == null) throw new PrinterShareException($"Printed Id can not found");
             var printer = await _context.Printers.FindAsync(orderPrintFile.PrinterId);
+            var u1 = await _context.Users.FindAsync(orderPrintFile.UserId); //user gui yeu cau
+            var query = from lpou in _context.ListPrinterOfUsers
+                        join u in _context.Users on lpou.UserId equals u.Id
+                        select new { lpou, u };
+            var u2 = query.Where(x => x.lpou.PrinterId == orderPrintFile.PrinterId).Single(); //user duoc yeu cau
             var orderPrintFileViewModel = new OrderPrintFileVm()
             {
                 Id = orderPrintFile.Id,
-                UserId = orderPrintFile.UserId,
+                OrderId = u1.UserName,
+                OrderName = u1.FullName,
+                Email = u1.Email,
+                ReceiveId = u2.u.UserName,
+                ReceiveName = u2.u.FullName,
                 PrinterId = orderPrintFile.PrinterId,
                 PrinterName = printer.Name,
                 FileName = orderPrintFile.FileName,
@@ -176,27 +200,6 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             return orderPrintFileViewModel;
         }
 
-        public async Task<int> RefreshHistory(string MyId)
-        {
-            //var userId = await _context.Users.FindAsync(request.UserId);
-            var user = await _userManager.FindByNameAsync(MyId);
-            if (user == null) throw new PrinterShareException($"This Your Id is invalid");
-            //else if (userId == null) throw new PrinterShareException($"Cannot have user: {request.UserId}");
-            else
-            {
-                var historyOfUsers = await _context.HistoryOfUsers.ToListAsync();
-                DateTime now = DateTime.Now;
-                foreach (var historyOfUser in historyOfUsers)
-                {
-                    TimeSpan span = now.Subtract(historyOfUser.DateTime);
-                    if(span.Days >= 10)
-                    {
-                        _context.HistoryOfUsers.Remove(historyOfUser);
-                    }
-                }
-            }
 
-            return await _context.SaveChangesAsync();
-        }
     }
 }

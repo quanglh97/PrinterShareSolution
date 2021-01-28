@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PrintShareSolution.Data.Configurations
 {
-    class OrderSendFileConfiguration : IEntityTypeConfiguration<OrderSendFile>
+    public class OrderSendFileConfiguration : IEntityTypeConfiguration<OrderSendFile>
     {
         public void Configure(EntityTypeBuilder<OrderSendFile> builder)
         {
@@ -16,7 +16,7 @@ namespace PrintShareSolution.Data.Configurations
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
 
-            builder.Property(x => x.UserNameReceive).HasMaxLength(8).IsRequired(true);
+            builder.Property(x => x.ReceiveId).HasMaxLength(8).IsRequired(true);
             builder.Property(x => x.FileName).HasMaxLength(200).IsRequired(true);
             builder.Property(x => x.FilePath).HasMaxLength(200).IsRequired(true);
             builder.Property(x => x.FileSize);

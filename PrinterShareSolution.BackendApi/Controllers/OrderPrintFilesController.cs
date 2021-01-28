@@ -62,13 +62,6 @@ namespace PrinterShareSolution.BackendApi.Controllers
             return Ok(printer);
         }
 
-        [HttpGet("RefreshHistory/{myId}")]
-        public async Task<IActionResult> Get(string myId)
-        {
-            var affectedResult = await _orderPrintFileService.RefreshHistory(myId);
-            if (affectedResult == 0)
-                return BadRequest(); 
-            return Ok();
-        }
+
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PrintShareSolution.Data.Configurations
 {
-    class HistoryOfUserConfiguration : IEntityTypeConfiguration<HistoryOfUser>
+    public class HistoryOfUserConfiguration : IEntityTypeConfiguration<HistoryOfUser>
     {
         public void Configure(EntityTypeBuilder<HistoryOfUser> builder)
         {
@@ -15,7 +15,7 @@ namespace PrintShareSolution.Data.Configurations
 
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
-            builder.Property(x => x.UserReceive);
+            builder.Property(x => x.ReceiveId);
             builder.Property(x => x.PrinterId);
             builder.Property(x => x.FileName).HasMaxLength(200).IsRequired();
             builder.Property(x => x.ActionHistory);
