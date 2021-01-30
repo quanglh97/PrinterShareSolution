@@ -138,7 +138,7 @@ namespace eShopSolution.Application.System.Users
         public async Task<ApiResult<UserVm>> Register(RegisterRequest request)
         {
             //request.UserName = RandomString(8);
-            var userName = RandomString(8);
+            var userName = RandomString(6);
             var phoneNumber = RandomString(10);
             //var user = await _userManager.FindByNameAsync(request.UserName);
             var user = await _userManager.FindByNameAsync(userName);
@@ -227,7 +227,8 @@ namespace eShopSolution.Application.System.Users
         
         public static string RandomString(int length)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            //const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "0123456789";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
