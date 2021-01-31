@@ -54,6 +54,7 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
                     PrinterId = x.hou.PrinterId,
                     FileName = x.hou.FileName,
                     ActionHistory = (PrintShareSolution.ViewModels.Enums.ActionHistory)x.hou.ActionHistory,
+                    Pages = x.hou.Pages,
                     DateTime = x.hou.DateTime
                 }).ToListAsync();
 

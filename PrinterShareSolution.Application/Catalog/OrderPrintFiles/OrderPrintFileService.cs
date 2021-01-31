@@ -54,6 +54,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     FileSize = request.ThumbnailFile.Length,
                     FileName = request.FileName,
                     FilePath = await this.SaveFile(request.ThumbnailFile),
+                    Pages = request.Pages
                 };
 
                 //Create History Order Of User
@@ -71,7 +72,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     PrinterId = request.PrinterId,
                     FileName = request.FileName,
                     ActionHistory = ActionHistory.OrderPrintFile,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    Pages = request.Pages
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);
 
@@ -130,7 +132,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     PrinterName = x.p.Name,
                     FileName = x.opf.FileName,
                     FileSize = x.opf.FileSize,
-                 
+                    Pages = x.opf.Pages,
                     DateTime = x.opf.DateTime,
                     FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + x.opf.FilePath
                 }).ToListAsync();
@@ -195,6 +197,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 FileName = orderPrintFile.FileName,
                 DateTime = orderPrintFile.DateTime,
                 FileSize = orderPrintFile.FileSize,
+                Pages = orderPrintFile.Pages,
                 FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + orderPrintFile.FilePath
             };
             return orderPrintFileViewModel;

@@ -11,6 +11,7 @@ namespace PrintShareSolution.ViewModels.Catalog.OrderPrintFile
         public string MyId { get; set; }
         public int PrinterId { get; set; }
         public string FileName { get; set; }
+        public int Pages { get; set; } //number pages order print of this file
         public IFormFile ThumbnailFile { get; set; }
     }
 }

@@ -119,6 +119,28 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                         join u in _context.Users on pou.UserId equals u.Id
                         select new { p, pou, u };
 
+            //Check time to change status of printer.
+            var Users = await _context.Users.ToListAsync();
+            DateTime now = DateTime.Now;
+            foreach (var user in Users)
+            {
+                TimeSpan span = now.Subtract(user.LastRequestTime);
+                if (span.Seconds >= 20)
+                {
+                    var queryForChangeStatus = from u in _context.Users
+                                join lpou in _context.ListPrinterOfUsers on u.Id equals lpou.UserId
+                                join p in _context.Printers on lpou.PrinterId equals p.Id
+                                where (u.Id == user.Id)
+                                select new { u, lpou, p };
+                    foreach (var printer in queryForChangeStatus)
+                    {
+                        printer.p.Status = PrintShareSolution.Data.Enums.Status.InActive;
+                    }
+                }
+            }
+            await _context.SaveChangesAsync();
+            /////////
+
             //2. filter
             //where p.Status == (PrintShareSolution.Data.Enums.Status)request.Status
             if ((PrintShareSolution.Data.Enums.Status)request.Status == Status.Active ||
@@ -154,9 +176,9 @@ namespace PrinterShareSolution.Application.Catalog.Printers
         {
             //1. Select join
             var query = from p in _context.Printers
-                        join pou in _context.ListPrinterOfUsers on p.Id equals pou.PrinterId
-                        join u in _context.Users on pou.UserId equals u.Id
-                        select new { p, pou, u };
+                        join lpou in _context.ListPrinterOfUsers on p.Id equals lpou.PrinterId
+                        join u in _context.Users on lpou.UserId equals u.Id
+                        select new { p, lpou, u };
 
             //2. filter
             var queryTemp = query;
@@ -173,8 +195,23 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                     query = queryTemp;
                     query = query.Where(x => x.u.FullName.ToString().ToLower().Contains(KeyWord.ToLower()));
                 }
-                    query = query.Where(x => x.p.Status == Status.Active);
+
+                ////Check time to change status of printer.
+                foreach (var instance in query)
+                {
+                    DateTime now = DateTime.Now;
+                    TimeSpan span = now.Subtract(instance.u.LastRequestTime);
+                    if (span.Seconds >= 20)
+                    {
+                        instance.p.Status = Status.InActive;
+                    }
+                }
+                await _context.SaveChangesAsync();
+                query = query.Where(x => x.p.Status == Status.Active);
             }
+
+            
+
             //Paging
             int totalRow = await query.CountAsync();
 

@@ -20,6 +20,7 @@ namespace PrintShareSolution.Data.Configurations
             builder.Property(x => x.FileName).HasMaxLength(200).IsRequired();
             builder.Property(x => x.ActionHistory);
             builder.Property(x => x.DateTime);
+            builder.Property(x => x.Pages);
 
             builder.HasOne(x => x.AppUser).WithMany(x => x.HistoryOfUsers).HasForeignKey(x => x.UserId);
             

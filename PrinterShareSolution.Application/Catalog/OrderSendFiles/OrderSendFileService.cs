@@ -70,7 +70,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                     ReceiveId = request.UserReceive,
                     FileName = request.FileName,
                     ActionHistory = (PrintShareSolution.Data.Enums.ActionHistory)ActionHistory.OrderSendFile,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    Pages = 0,
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);
 
