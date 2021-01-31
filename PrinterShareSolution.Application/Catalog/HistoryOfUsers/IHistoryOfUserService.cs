@@ -10,6 +10,7 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
     public interface IHistoryOfUserService
     {
         Task<PagedResult<HistoryOfUserVm>> GetByMyId(GetHistoryOfUserPagingRequest request);
+        Task<PagedResult<HistoryOfUserVm>> GetByDateRange(GetHistoryOfUserByDateRange request);
         Task<int> RefreshHistory(string MyId);
     }
 }

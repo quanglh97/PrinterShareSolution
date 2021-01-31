@@ -61,6 +61,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                     FileName = request.FileName,
                     FilePath = await this.SaveFile(request.ThumbnailFile),
                 };
+                _context.OrderSendFiles.Add(orderSendFile);
+                await _context.SaveChangesAsync();
 
                 //Create History Order Of User
                 var historyOfUser = new HistoryOfUser()
@@ -72,10 +74,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                     ActionHistory = (PrintShareSolution.Data.Enums.ActionHistory)ActionHistory.OrderSendFile,
                     DateTime = DateTime.Now,
                     Pages = 0,
+                    OrderPrintFileId = -1,
+                    OrderSendFileId = orderSendFile.Id,
+                    //Result=
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);
-
-                _context.OrderSendFiles.Add(orderSendFile);
                 await _context.SaveChangesAsync();
                 return orderSendFile.Id;
             }
@@ -90,6 +93,13 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
             if (orderSendFile == null) throw new PrinterShareException($"Cannot find a orderSendFile : {request.Id}");
             else
             {
+                var historyOrders = from hou in _context.HistoryOfUsers
+                                    where hou.OrderSendFileId == request.Id
+                                    select (hou);
+                foreach (var history in historyOrders)
+                {
+                    history.Result = (PrintShareSolution.Data.Enums.Result)request.Result;
+                }
                 await _storageService.DeleteFileAsync(orderSendFile.FilePath);
                 _context.OrderSendFiles.Remove(orderSendFile);
             }
@@ -171,7 +181,10 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                     PrinterId = -1,
                     FileName = orderSendFile.osf.FileName,
                     ActionHistory = (PrintShareSolution.Data.Enums.ActionHistory)ActionHistory.ReceiveFile,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    OrderPrintFileId = -1,
+                    OrderSendFileId = orderSendFile.osf.Id,
+                    //Result = 
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);
             }

@@ -22,4 +22,12 @@ namespace PrintShareSolution.ViewModels.Enums
         ReceiveFile,
         PrintFile
     }
+
+    public enum Result
+    {
+        NotDone, //chua thuc thien yeu cau
+        Success, //thuc hien thanh cong
+        CancelPrint,  //tu choi thuc hien yeu cau
+        CancelReceive,
+    }
 }

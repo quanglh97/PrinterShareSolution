@@ -16,6 +16,7 @@ namespace PrintShareSolution.ViewModels.Catalog.HistoryOfUser
         public string FileName { get; set; }
         public ActionHistory ActionHistory { get; set; }
         public int Pages { get; set; }
+        public Result Result { get; set; }
         public DateTime DateTime { get; set; }
     }
 }

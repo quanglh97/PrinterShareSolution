@@ -55,8 +55,51 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
                     FileName = x.hou.FileName,
                     ActionHistory = (PrintShareSolution.ViewModels.Enums.ActionHistory)x.hou.ActionHistory,
                     Pages = x.hou.Pages,
+                    Result = (PrintShareSolution.ViewModels.Enums.Result)x.hou.Result,
                     DateTime = x.hou.DateTime
                 }).ToListAsync();
+
+            //4. Select and projection
+            var pagedResult = new PagedResult<HistoryOfUserVm>()
+            {
+                TotalRecords = totalRow,
+                PageSize = 1000,
+                PageIndex = 1,
+                Items = data
+            };
+            return pagedResult;
+        }
+
+        public async Task<PagedResult<HistoryOfUserVm>> GetByDateRange(GetHistoryOfUserByDateRange request)
+        {
+            //1. Select join
+            var query = from hou in _context.HistoryOfUsers
+                        join u1 in _context.Users on hou.UserId equals u1.Id  // user gui yeu cau
+                        join u2 in _context.Users on hou.ReceiveId equals u2.UserName //user nhan yeu cau
+                        select new { hou, u1, u2 };
+
+            //2. filter
+            //where p.Status == (PrintShareSolution.Data.Enums.Status)request.Status
+            query = query.Where(x => x.u1.UserName == request.MyId || x.u2.UserName == request.MyId);
+            //query = query.Where(x => x.hou.DateTime.Subtract(request.FirstDay).Days > 0 && x.hou.DateTime.Subtract(request.LastDay).Days < 0);
+            query = query.Where(x => x.hou.DateTime >= request.FirstDay && x.hou.DateTime <= request.LastDay);
+            //Paging
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Select(x => new HistoryOfUserVm()
+            {
+                Id = x.hou.Id,
+                OrderId = x.u1.UserName,
+                OrderName = x.u1.FullName,
+                ReceiveId = x.u2.UserName,
+                ReceiveName = x.u2.FullName,
+                PrinterId = x.hou.PrinterId,
+                FileName = x.hou.FileName,
+                ActionHistory = (PrintShareSolution.ViewModels.Enums.ActionHistory)x.hou.ActionHistory,
+                Pages = x.hou.Pages,
+                Result = (PrintShareSolution.ViewModels.Enums.Result)x.hou.Result,
+                DateTime = x.hou.DateTime
+            }).ToListAsync();
 
             //4. Select and projection
             var pagedResult = new PagedResult<HistoryOfUserVm>()
@@ -91,5 +134,7 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
 
             return await _context.SaveChangesAsync();
         }
+
+
     }
 }

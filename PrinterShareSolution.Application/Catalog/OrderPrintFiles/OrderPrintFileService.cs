@@ -57,6 +57,9 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     Pages = request.Pages
                 };
 
+                _context.OrderPrintFiles.Add(orderPrintFile);
+                await _context.SaveChangesAsync();
+
                 //Create History Order Of User
                 var query = from lpou in _context.ListPrinterOfUsers
                             where (lpou.PrinterId == request.PrinterId)
@@ -64,7 +67,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 var userReceiveId = query.Single().UserId;
                 var userReceive = await _context.Users.FindAsync(userReceiveId);
                 if (userReceive == null) throw new PrinterShareException($"user receive not active:");
-                
+
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = user.Id,
@@ -73,11 +76,12 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     FileName = request.FileName,
                     ActionHistory = ActionHistory.OrderPrintFile,
                     DateTime = DateTime.Now,
-                    Pages = request.Pages
+                    Pages = request.Pages,
+                    OrderPrintFileId = orderPrintFile.Id,
+                    OrderSendFileId = -1
+                    //Result = 
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);
-
-                _context.OrderPrintFiles.Add(orderPrintFile);
                 await _context.SaveChangesAsync();
                 return orderPrintFile.Id;
             }
@@ -92,7 +96,14 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
             if (orderPrintFile == null) throw new PrinterShareException($"Cannot find a orderPrintFile : {request.Id}");
             //else if (userId == null) throw new PrinterShareException($"Cannot have user: {request.UserId}");
             else 
-            { 
+            {
+                var historyOrders = from hou in _context.HistoryOfUsers
+                                   where hou.OrderPrintFileId == request.Id
+                                     select(hou);
+                foreach(var history in historyOrders)
+                {
+                    history.Result = (Result)request.Result;
+                }
                 await _storageService.DeleteFileAsync(orderPrintFile.FilePath);
                 _context.OrderPrintFiles.Remove(orderPrintFile); 
             }
@@ -158,7 +169,11 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     PrinterId = orderPrintFile.opf.PrinterId,
                     FileName = orderPrintFile.opf.FileName,
                     ActionHistory = ActionHistory.PrintFile,
-                    DateTime = DateTime.Now
+                    DateTime = DateTime.Now,
+                    Pages = orderPrintFile.opf.Pages,
+                    OrderPrintFileId = orderPrintFile.opf.Id,
+                    OrderSendFileId = -1,
+
                 };
                 _context.HistoryOfUsers.Add(historyOfUser);       
             }

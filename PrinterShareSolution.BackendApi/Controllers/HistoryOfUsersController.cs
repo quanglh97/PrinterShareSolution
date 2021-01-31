@@ -22,9 +22,16 @@ namespace PrinterShareSolution.BackendApi.Controllers
         }
 
         [HttpGet("paging")]
-        public async Task<IActionResult> GetStatusPaging([FromQuery] GetHistoryOfUserPagingRequest request)
+        public async Task<IActionResult> GetPaging([FromQuery] GetHistoryOfUserPagingRequest request)
         {
             var historyOfUsers = await _historyOfUserService.GetByMyId(request);
+            return Ok(historyOfUsers);
+        }
+
+        [HttpGet("DateRange")]
+        public async Task<IActionResult> GetByDateRange([FromQuery] GetHistoryOfUserByDateRange request)
+        {
+            var historyOfUsers = await _historyOfUserService.GetByDateRange(request);
             return Ok(historyOfUsers);
         }
 

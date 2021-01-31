@@ -15,6 +15,9 @@ namespace PrintShareSolution.Data.Entities
         public int Pages { get; set; }
         public ActionHistory ActionHistory { get; set; }
         public DateTime DateTime { get; set; }
+        public Result Result { get; set; }
+        public int OrderPrintFileId { get; set; }
+        public int OrderSendFileId { get; set; }
         public AppUser AppUser { get; set; }
     }
 }
