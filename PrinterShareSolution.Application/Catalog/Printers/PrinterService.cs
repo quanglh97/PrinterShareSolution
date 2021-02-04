@@ -149,9 +149,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             //Paging
             int totalRow = await query.CountAsync();
 
-            var data = await query.Skip((request.PageIndex - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .Select(x => new PrinterVm()
+            var data = await query.Select(x => new PrinterVm()
                 {
                     Id = x.p.Id,
                     myId = x.u.UserName,
@@ -212,7 +210,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             //Paging
             int totalRow = await query.CountAsync();
 
-            var data = await query.Skip(0).Take(10).Select(x => new PrinterVm()
+            var data = await query.Select(x => new PrinterVm()
                 {
                     Id = x.p.Id,
                     myId = x.u.UserName,
@@ -234,6 +232,8 @@ namespace PrinterShareSolution.Application.Catalog.Printers
         }
         public async Task<PagedResult<PrinterVm>> GetPrinterNewStatus(GetPrinterNewStatusRequest request)
         {
+/*            var User = _userManager.FindByNameAsync(request.MyId);
+            if (User == null) throw new PrinterShareException($"MyId is not valid: {request.MyId}");*/
             ///select join
             var query = from p in _context.Printers
                         join lpou in _context.ListPrinterOfUsers on p.Id equals lpou.PrinterId
@@ -253,15 +253,12 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             await _context.SaveChangesAsync();
 
             ////filter
-            var User = _userManager.FindByNameAsync(request.MyId);
-            if(User == null) throw new PrinterShareException($"MyId is not valid: {request.MyId}");
-
             query = query.Where(x => request.L_PrinterId.Contains(x.p.Id));
 
             //Paging
             int totalRow = await query.CountAsync();
 
-            var data = await query.Skip(0).Take(10).Select(x => new PrinterVm()
+            var data = await query.Select(x => new PrinterVm()
             {
                 Id = x.p.Id,
                 myId = x.u.UserName,
