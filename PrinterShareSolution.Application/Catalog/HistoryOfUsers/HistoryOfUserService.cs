@@ -36,7 +36,9 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
             var query = from hou in _context.HistoryOfUsers
                         join u1 in _context.Users on hou.UserId equals u1.Id  // user gui yeu cau
                         join u2 in _context.Users on hou.ReceiveId equals u2.UserName //user nhan yeu cau
-                        select new { hou, u1, u2 };
+                        join lpou in _context.ListPrinterOfUsers on u2.Id equals lpou.UserId
+                        join p in _context.Printers on lpou.PrinterId equals p.Id
+                        select new { hou, u1, u2, p };
             
             //2. filter
             //where p.Status == (PrintShareSolution.Data.Enums.Status)request.Status
@@ -52,6 +54,7 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
                     ReceiveId = x.u2.UserName,
                     ReceiveName =x.u2.FullName,
                     PrinterId = x.hou.PrinterId,
+                    PrinterName = x.p.Name,
                     FileName = x.hou.FileName,
                     ActionHistory = (PrintShareSolution.ViewModels.Enums.ActionHistory)x.hou.ActionHistory,
                     Pages = x.hou.Pages,
@@ -76,7 +79,9 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
             var query = from hou in _context.HistoryOfUsers
                         join u1 in _context.Users on hou.UserId equals u1.Id  // user gui yeu cau
                         join u2 in _context.Users on hou.ReceiveId equals u2.UserName //user nhan yeu cau
-                        select new { hou, u1, u2 };
+                        join lpou in _context.ListPrinterOfUsers on u2.Id equals lpou.UserId
+                        join p in _context.Printers on lpou.PrinterId equals p.Id
+                        select new { hou, u1, u2, p };
 
             //2. filter
             //where p.Status == (PrintShareSolution.Data.Enums.Status)request.Status
@@ -94,6 +99,7 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
                 ReceiveId = x.u2.UserName,
                 ReceiveName = x.u2.FullName,
                 PrinterId = x.hou.PrinterId,
+                PrinterName =x.p.Name,
                 FileName = x.hou.FileName,
                 ActionHistory = (PrintShareSolution.ViewModels.Enums.ActionHistory)x.hou.ActionHistory,
                 Pages = x.hou.Pages,

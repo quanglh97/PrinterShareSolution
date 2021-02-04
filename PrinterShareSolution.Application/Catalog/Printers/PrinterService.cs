@@ -125,7 +125,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             foreach (var user in Users)
             {
                 TimeSpan span = now.Subtract(user.LastRequestTime);
-                if (span.Seconds >= 20)
+                if (span.Seconds >= 10)
                 {
                     var queryForChangeStatus = from u in _context.Users
                                 join lpou in _context.ListPrinterOfUsers on u.Id equals lpou.UserId
@@ -201,7 +201,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 {
                     DateTime now = DateTime.Now;
                     TimeSpan span = now.Subtract(instance.u.LastRequestTime);
-                    if (span.Seconds >= 20)
+                    if (span.Seconds >= 10)
                     {
                         instance.p.Status = Status.InActive;
                     }
@@ -209,9 +209,6 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 await _context.SaveChangesAsync();
                 query = query.Where(x => x.p.Status == Status.Active);
             }
-
-            
-
             //Paging
             int totalRow = await query.CountAsync();
 
@@ -224,6 +221,55 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                     Email = x.u.Email,
                     Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
                 }).ToListAsync();
+
+            //4. Select and projection
+            var pagedResult = new PagedResult<PrinterVm>()
+            {
+                TotalRecords = totalRow,
+                PageSize = 10,
+                PageIndex = 1,
+                Items = data
+            };
+            return pagedResult;
+        }
+        public async Task<PagedResult<PrinterVm>> GetPrinterNewStatus(GetPrinterNewStatusRequest request)
+        {
+            ///select join
+            var query = from p in _context.Printers
+                        join lpou in _context.ListPrinterOfUsers on p.Id equals lpou.PrinterId
+                        join u in _context.Users on lpou.UserId equals u.Id
+                        select new { p, lpou, u };
+
+            ////Check time to change status of printer.
+            foreach (var instance in query)
+            {
+                DateTime now = DateTime.Now;
+                TimeSpan span = now.Subtract(instance.u.LastRequestTime);
+                if (span.Seconds >= 10)
+                {
+                    instance.p.Status = Status.InActive;
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            ////filter
+            var User = _userManager.FindByNameAsync(request.MyId);
+            if(User == null) throw new PrinterShareException($"MyId is not valid: {request.MyId}");
+
+            query = query.Where(x => request.L_PrinterId.Contains(x.p.Id));
+
+            //Paging
+            int totalRow = await query.CountAsync();
+
+            var data = await query.Skip(0).Take(10).Select(x => new PrinterVm()
+            {
+                Id = x.p.Id,
+                myId = x.u.UserName,
+                Name = x.p.Name,
+                FullName = x.u.FullName,
+                Email = x.u.Email,
+                Status = (PrintShareSolution.ViewModels.Enums.Status)x.p.Status,
+            }).ToListAsync();
 
             //4. Select and projection
             var pagedResult = new PagedResult<PrinterVm>()

@@ -19,5 +19,6 @@ namespace PrinterShareSolution.Application.Catalog.Printers
 
         Task<PagedResult<PrinterVm>> GetStatusPaging(GetPrinterPagingRequest request);
         Task<PagedResult<PrinterVm>> GetKeyWordPaging(string KeyWord);
+        Task<PagedResult<PrinterVm>> GetPrinterNewStatus(GetPrinterNewStatusRequest request);
     }
 }

@@ -84,5 +84,14 @@ namespace PrinterShareSolution.BackendApi.Controllers
             var printers = await _printerService.GetKeyWordPaging(keyWord);
             return Ok(printers);
         }
+
+        [HttpGet("NewStatus")]
+        public async Task<IActionResult> GetNewStatus([FromQuery] GetPrinterNewStatusRequest request)
+        {
+            var printers = await _printerService.GetPrinterNewStatus(request);
+            if (printers == null)
+                return BadRequest("Cannot find list printers");
+            return Ok(printers);
+        }
     }
 }

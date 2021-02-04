@@ -24,9 +24,9 @@ namespace PrintShareSolution.Data.Enums
     }
     public enum Result 
     {
-        NotDone, //chua thuc thien yeu cau
-        Success, //thuc hien thanh cong
-        CancelPrint,  //tu choi thuc hien yeu cau in
-        CancelReceive, // tu choi nhan file
+        NotDone, //chua thuc thien yeu cau = 0
+        Success, //thuc hien thanh cong = 1
+        CancelPrint,  //tu choi thuc hien yeu cau in = 2
+        CancelReceive, // tu choi nhan file = 3
     }
 }

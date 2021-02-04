@@ -46,7 +46,7 @@ namespace PrinterShareSolution.BackendApi
             });
 
             services.AddDbContext<PrinterShareDbContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+              options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
 
             services.AddIdentity<AppUser, AppRole>()
             .AddEntityFrameworkStores<PrinterShareDbContext>()
