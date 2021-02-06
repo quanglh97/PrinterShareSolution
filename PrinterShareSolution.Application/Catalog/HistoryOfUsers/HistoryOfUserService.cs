@@ -32,21 +32,44 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
         }
         public async Task<PagedResult<HistoryOfUserVm>> GetByMyId(GetHistoryOfUserPagingRequest request)
         {
+            //clean History
+            var historyOfUsers = await _context.HistoryOfUsers.ToListAsync();
+            DateTime now = DateTime.Now;
+            foreach (var historyOfUser in historyOfUsers)
+            {
+                TimeSpan span = now.Subtract(historyOfUser.DateTime);
+                if (span.Days >= 10)
+                {
+                    _context.HistoryOfUsers.Remove(historyOfUser);
+                }
+            }
+            await _context.SaveChangesAsync();
+
             //1. Select join
-            var query = from hou in _context.HistoryOfUsers
+            var queryPrint = from hou in _context.HistoryOfUsers
                         join u1 in _context.Users on hou.UserId equals u1.Id  // user gui yeu cau
                         join u2 in _context.Users on hou.ReceiveId equals u2.UserName //user nhan yeu cau
-                        join lpou in _context.ListPrinterOfUsers on u2.Id equals lpou.UserId
-                        join p in _context.Printers on lpou.PrinterId equals p.Id
-                        select new { hou, u1, u2, p };
-            
+                        //join lpou in _context.ListPrinterOfUsers on u2.Id equals lpou.UserId
+                        join p in _context.Printers on hou.PrinterId equals p.Id                      
+                        select new { hou, u1, u2, p};
+            var querySend = from hou in _context.HistoryOfUsers
+                            join u1 in _context.Users on hou.UserId equals u1.Id  // user gui yeu cau
+                            join u2 in _context.Users on hou.ReceiveId equals u2.UserName //user nhan yeu cau
+                            select new { hou, u1, u2 };
+
             //2. filter
             //where p.Status == (PrintShareSolution.Data.Enums.Status)request.Status
-                query = query.Where(x => x.u1.UserName == request.MyId || x.u2.UserName == request.MyId);
-            //Paging
-            int totalRow = await query.CountAsync();
+            queryPrint = queryPrint.Where(x => x.u1.UserName == request.MyId || x.u2.UserName == request.MyId);
+            queryPrint = queryPrint.Where(x => x.hou.PrinterId != -1);
 
-            var data = await query.Select(x => new HistoryOfUserVm()
+            querySend = querySend.Where(x => x.u1.UserName == request.MyId || x.u2.UserName == request.MyId);
+            querySend = querySend.Where(x=>x.hou.PrinterId == -1);
+            //Paging
+            int totalRow = await queryPrint.CountAsync();
+            totalRow += await querySend.CountAsync();
+
+            var dataPrint = await queryPrint.Skip(0)
+                .Take(1000).Select(x => new HistoryOfUserVm()
                 {
                     Id = x.hou.Id,
                     OrderId = x.u1.UserName,
@@ -62,6 +85,24 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
                     DateTime = x.hou.DateTime
                 }).ToListAsync();
 
+            var dataSend = await querySend.Skip(0).Take(1000).Select(x => new HistoryOfUserVm()
+            {
+                Id = x.hou.Id,
+                OrderId = x.u1.UserName,
+                OrderName = x.u1.FullName,
+                ReceiveId = x.u2.UserName,
+                ReceiveName = x.u2.FullName,
+                PrinterId = x.hou.PrinterId,
+                PrinterName = null,
+                FileName = x.hou.FileName,
+                ActionHistory = (PrintShareSolution.ViewModels.Enums.ActionHistory)x.hou.ActionHistory,
+                Pages = x.hou.Pages,
+                Result = (PrintShareSolution.ViewModels.Enums.Result)x.hou.Result,
+                DateTime = x.hou.DateTime
+            }).ToListAsync();
+
+            var data = dataPrint;
+            data.AddRange(dataSend);
             //4. Select and projection
             var pagedResult = new PagedResult<HistoryOfUserVm>()
             {

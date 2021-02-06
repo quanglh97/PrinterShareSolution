@@ -41,8 +41,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
         {
             if (request.ThumbnailFile != null)
             {
-                var printer = await _context.Printers.FindAsync(request.PrinterId);
-                if(printer == null || printer.Status != Status.Active) throw new PrinterShareException($"printer not active: {request.PrinterId}");
+                //var printer = await _context.Printers.FindAsync(request.PrinterId);
+                //if(printer == null || printer.Status != Status.Active) throw new PrinterShareException($"printer not active: {request.PrinterId}");
                 var user = await _userManager.FindByNameAsync(request.MyId);
                 if (user == null) throw new PrinterShareException("$this user is invalid");
                 
@@ -63,8 +63,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 //Create History Order Of User
                 var query = from lpou in _context.ListPrinterOfUsers
                             where (lpou.PrinterId == request.PrinterId)
-                            select (lpou);
-                var userReceiveId = query.Single().UserId;
+                            select new {lpou};
+                var userReceiveId = query.Single().lpou.UserId;
                 var userReceive = await _context.Users.FindAsync(userReceiveId);
                 if (userReceive == null) throw new PrinterShareException($"user receive not active:");
 
@@ -115,6 +115,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
         {
             var UpdateLastRequestUser = await _userManager.FindByNameAsync(request.MyId);
             UpdateLastRequestUser.LastRequestTime = DateTime.Now;
+            await _context.SaveChangesAsync();
 
             //1.Select join
             var query = from opf in _context.OrderPrintFiles

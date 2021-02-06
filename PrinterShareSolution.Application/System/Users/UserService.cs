@@ -137,6 +137,25 @@ namespace eShopSolution.Application.System.Users
 
         public async Task<ApiResult<UserVm>> Register(RegisterRequest request)
         {
+            var User = await _userManager.FindByEmailAsync(request.Email);
+            if (User != null)
+            {
+                if(User.FullName.CompareTo(request.FullName) == 0)
+                {
+                    var DataUser = new UserVm()
+                    {
+                        Email = User.Email,
+                        PhoneNumber = User.PhoneNumber,
+                        myId = User.UserName,
+                        FullName = User.FullName,
+                        Id = User.Id,
+                    };
+                    return new ApiSuccessResult<UserVm>(DataUser);
+                }   
+                else
+                    return new ApiErrorResult<UserVm>("Emai đã tồn tại");
+            }
+
             //request.UserName = RandomString(8);
             var userName = RandomString(6);
             var phoneNumber = RandomString(10);
@@ -148,10 +167,7 @@ namespace eShopSolution.Application.System.Users
                 userName = RandomString(8);
                 user = await _userManager.FindByNameAsync(userName);
             } ;
-            if (await _userManager.FindByEmailAsync(request.Email) != null)
-            {
-                return new ApiErrorResult<UserVm>("Emai đã tồn tại");
-            }
+            
 
             user = new AppUser()
             {
