@@ -71,6 +71,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
                     PrinterId = -1,
                     ReceiveId = request.UserReceive,
                     FileName = request.FileName,
+                    FileSize = request.ThumbnailFile.Length,
                     ActionHistory = (PrintShareSolution.Data.Enums.ActionHistory)ActionHistory.OrderSendFile,
                     DateTime = DateTime.Now,
                     Pages = 0,
@@ -170,10 +171,12 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
             };
 
             //Create History DO Order Of User
-
+            var queryHistory = from hou in _context.HistoryOfUsers select new { hou };
             //var orderPrintFiles =  await _context.OrderPrintFiles.Where(i => i.PrinterId == request.PrinterId).ToListAsync();
             foreach (var orderSendFile in query)
             {
+                var instanceHistory = queryHistory.Where(x => x.hou.OrderSendFileId == orderSendFile.osf.Id);
+                if (instanceHistory != null) continue;
                 var historyOfUser = new HistoryOfUser()
                 {
                     UserId = orderSendFile.osf.UserId,

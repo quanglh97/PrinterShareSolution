@@ -19,6 +19,7 @@ namespace PrintShareSolution.Data.Configurations
             builder.Property(x => x.ReceiveId);
             builder.Property(x => x.PrinterId);
             builder.Property(x => x.FileName).HasMaxLength(200).IsRequired();
+            builder.Property(x => x.FileSize);
             builder.Property(x => x.ActionHistory);
             builder.Property(x => x.DateTime);
             builder.Property(x => x.Pages);

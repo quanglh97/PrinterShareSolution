@@ -205,7 +205,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                     }
                 }
                 await _context.SaveChangesAsync();
-                query = query.Where(x => x.p.Status == Status.Active);
+                //query = query.Where(x => x.p.Status == Status.Active);
             }
             //Paging
             int totalRow = await query.CountAsync();
