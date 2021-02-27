@@ -125,7 +125,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             foreach (var user in Users)
             {
                 TimeSpan span = now.Subtract(user.LastRequestTime);
-                if (span.Seconds >= 30)
+                if (span.Seconds >= 58)
                 {
                     var queryForChangeStatus = from u in _context.Users
                                 join lpou in _context.ListPrinterOfUsers on u.Id equals lpou.UserId
@@ -199,7 +199,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
                 {
                     DateTime now = DateTime.Now;
                     TimeSpan span = now.Subtract(instance.u.LastRequestTime);
-                    if (span.Seconds >= 30)
+                    if (span.Seconds >= 58)
                     {
                         instance.p.Status = Status.InActive;
                     }
@@ -245,7 +245,7 @@ namespace PrinterShareSolution.Application.Catalog.Printers
             {
                 DateTime now = DateTime.Now;
                 TimeSpan span = now.Subtract(instance.u.LastRequestTime);
-                if (span.Seconds >= 30)
+                if (span.Seconds >= 58)
                 {
                     instance.p.Status = Status.InActive;
                 }

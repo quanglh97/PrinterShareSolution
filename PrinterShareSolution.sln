@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrinterShareSolution.Applic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrinterShareSolution.BackendApi", "PrinterShareSolution.BackendApi\PrinterShareSolution.BackendApi.csproj", "{0630E85E-2B04-478D-A0A3-7D0AE1F337C9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrinterShareSolution.ToolManager", "PrinterShareSolution.ToolManager\PrinterShareSolution.ToolManager.csproj", "{03CEC5A7-9A13-4F0A-AC1A-60CDF68A65C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{0630E85E-2B04-478D-A0A3-7D0AE1F337C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0630E85E-2B04-478D-A0A3-7D0AE1F337C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0630E85E-2B04-478D-A0A3-7D0AE1F337C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03CEC5A7-9A13-4F0A-AC1A-60CDF68A65C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03CEC5A7-9A13-4F0A-AC1A-60CDF68A65C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03CEC5A7-9A13-4F0A-AC1A-60CDF68A65C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03CEC5A7-9A13-4F0A-AC1A-60CDF68A65C7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{6F883356-4379-43B9-B4F6-7975DF800DE5} = {62384564-B71B-4C05-9FEC-C20339421C26}
 		{981A4D71-F626-473F-9279-D07DD28B39F3} = {089EE4E9-6B12-40A9-8623-6783AB650A85}
 		{0630E85E-2B04-478D-A0A3-7D0AE1F337C9} = {1B4822BE-D5AE-4276-85E1-6BE2531E1DDD}
+		{03CEC5A7-9A13-4F0A-AC1A-60CDF68A65C7} = {1B4822BE-D5AE-4276-85E1-6BE2531E1DDD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E16B2883-298F-4916-97E4-2E81F5DEDF23}

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PrinterShareSolution.Application.System.Users;
+using PrintShareSolution.Data.EF;
 using PrintShareSolution.Data.Entities;
 using PrintShareSolution.ViewModels.Common;
 using PrintShareSolution.ViewModels.System.Users;
@@ -19,6 +20,7 @@ namespace eShopSolution.Application.System.Users
 {
     public class UserService : IUserService
     {
+        private readonly PrinterShareDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
@@ -26,11 +28,13 @@ namespace eShopSolution.Application.System.Users
 
         private static Random random = new Random();
 
-        public UserService(UserManager<AppUser> userManager,
+        public UserService(PrinterShareDbContext context,
+            UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             RoleManager<AppRole> roleManager,
             IConfiguration config)
         {
+            _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
@@ -74,8 +78,24 @@ namespace eShopSolution.Application.System.Users
             {
                 return new ApiErrorResult<bool>("User không tồn tại");
             }
-            var reult = await _userManager.DeleteAsync(user);
-            if (reult.Succeeded)
+
+            var printerOfUserQuery = from lpou in _context.ListPrinterOfUsers
+                                     where lpou.UserId == user.Id
+                                     select new { lpou };
+
+            foreach(var index in printerOfUserQuery)
+            {
+                var Printer = await _context.Printers.FindAsync(index.lpou.PrinterId);
+                if (Printer != null)
+                {
+                    _context.Printers.Remove(Printer);
+                    _context.ListPrinterOfUsers.Remove(index.lpou);
+                }
+            }
+            await _context.SaveChangesAsync();
+
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
                 return new ApiSuccessResult<bool>();
 
             return new ApiErrorResult<bool>("Xóa không thành công");
