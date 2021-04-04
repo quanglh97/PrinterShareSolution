@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PrintShareSolution.Data.Entities;
+using PrintShareSolution.Data.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,20 +23,31 @@ namespace eShopSolution.Data.Extensions
                 new AppConfig() { Key = "HomeDescription", Value = "This is description of PrinterShareSolution" });
 
             modelBuilder.Entity<Printer>().HasData(
-                new Printer() { Id = 1, Name = "P1", Status = PrintShareSolution.Data.Enums.Status.InActive},
-                new Printer() { Id = 2, Name = "P2", Status = PrintShareSolution.Data.Enums.Status.InActive});
+                new Printer() { Id = 1, Name = "P1", Status = Status.InActive},
+                new Printer() { Id = 2, Name = "P2", Status = Status.InActive});
 
             modelBuilder.Entity<OrderPrintFile>().HasData(
-                new OrderPrintFile() { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx" },
-                new OrderPrintFile() { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx" });
+                new OrderPrintFile() 
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx" },
+                new OrderPrintFile() 
+                { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx"});
 
+            modelBuilder.Entity<OrderSendFile>().HasData(
+                new OrderSendFile()
+                { Id = 1, UserId = adminId, ReceiveId="KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" },
+                new OrderSendFile()
+                { Id = 2, UserId = adminId, ReceiveId = "KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" });
 
             modelBuilder.Entity<ListPrinterOfUser>().HasData(
-                new ListPrinterOfUser() { Id = 1, UserId = adminId, PrinterId = 1 },
-                new ListPrinterOfUser() { Id = 2, UserId = adminId, PrinterId = 2 });
+                new ListPrinterOfUser() { UserId = adminId, PrinterId = 1 },
+                new ListPrinterOfUser() { UserId = adminId, PrinterId = 2 });
 
             modelBuilder.Entity<BlockList>().HasData(
-                new BlockList() {Id = 1, UserId = adminId, UserBlockedId = clientId , BlackListFilePath = "C://BackList.txt"} );
+                new BlockList() {Id = 1, UserId = adminId, UserBlocked = "DKFAJ56" , BlackListFilePath = "C://BackList.txt"} );
+
+            modelBuilder.Entity<HistoryOfUser>().HasData(
+                new HistoryOfUser() 
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "C://xxx.docx", ActionHistory = ActionHistory.OrderSendFile, DateTime = DateTime.Now});
 
             // any guid
             

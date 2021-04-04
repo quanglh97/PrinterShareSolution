@@ -13,8 +13,10 @@ namespace PrintShareSolution.Data.Configurations
         {
             builder.ToTable("ListPrinterOfUser");
 
-            builder.HasKey(x => x.Id);
-            builder.Property(x => x.Id).UseIdentityColumn();
+            /*builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).UseIdentityColumn();*/
+
+            builder.HasKey(x => new { x.UserId, x.PrinterId });
 
             builder.HasOne(x => x.Printer).WithMany(x => x.ListPrinterOfUsers).HasForeignKey(x => x.PrinterId);
             builder.HasOne(x => x.AppUser).WithMany(x => x.ListPrinterOfUsers).HasForeignKey(x => x.UserId);
