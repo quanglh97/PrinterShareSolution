@@ -38,7 +38,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromForm] OrderPrintFileDeleteRequest request)
+        public async Task<IActionResult> Delete([FromBody] OrderPrintFileDeleteRequest request)
         {
             var affectedResult = await _orderPrintFileService.Delete(request);
             if (affectedResult == 0)
@@ -49,7 +49,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
         [HttpGet("Command")]
         public async Task<IActionResult> GetCommandPaging([FromQuery] GetOrderPrintFilePagingRequest request)
         {
-            var products = await _orderPrintFileService.GetByPrinterId(request);
+            var products = await _orderPrintFileService.GetByMyId(request);
             return Ok(products);
         }
 
@@ -61,5 +61,7 @@ namespace PrinterShareSolution.BackendApi.Controllers
                 return BadRequest("Cannot find printer");
             return Ok(printer);
         }
+
+
     }
 }

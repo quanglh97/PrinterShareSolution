@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PrintShareSolution.Data.Configurations
 {
-    class OrderPrintFileConfiguration : IEntityTypeConfiguration<OrderPrintFile>
+    public class OrderPrintFileConfiguration : IEntityTypeConfiguration<OrderPrintFile>
     {
         public void Configure(EntityTypeBuilder<OrderPrintFile> builder)
         {
@@ -19,8 +19,8 @@ namespace PrintShareSolution.Data.Configurations
             builder.Property(x => x.DateTime);
             builder.Property(x=>x.FileName).HasMaxLength(200).IsRequired(true);
             builder.Property(x => x.FilePath).HasMaxLength(200).IsRequired(true);
-            builder.Property(x => x.ActionOrder).HasDefaultValue(ActionOrder.SendFile).IsRequired(true);
             builder.Property(x => x.FileSize);
+            builder.Property(x => x.Pages);
 
             builder.HasOne(x => x.Printer).WithMany(x => x.OrderPrintFiles).HasForeignKey(x => x.PrinterId);
             builder.HasOne(x => x.AppUser).WithMany(x => x.OrderPrintFiles).HasForeignKey(x => x.UserId);

@@ -28,21 +28,26 @@ namespace eShopSolution.Data.Extensions
 
             modelBuilder.Entity<OrderPrintFile>().HasData(
                 new OrderPrintFile() 
-                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx", ActionOrder = ActionOrder.PrintFile },
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "xxx.docx", FilePath = "C://xxx.docx" },
                 new OrderPrintFile() 
-                { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx", ActionOrder = ActionOrder.SendFile });
+                { Id = 2, UserId = adminId, PrinterId = 2, FileName = "xxx.docx", FilePath = "C://xxx.docx"});
 
+            modelBuilder.Entity<OrderSendFile>().HasData(
+                new OrderSendFile()
+                { Id = 1, UserId = adminId, ReceiveId="KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" },
+                new OrderSendFile()
+                { Id = 2, UserId = adminId, ReceiveId = "KhaiTb", FileName = "xxx.docx", FilePath = "C://xxx.docx" });
 
             modelBuilder.Entity<ListPrinterOfUser>().HasData(
                 new ListPrinterOfUser() { UserId = adminId, PrinterId = 1 },
                 new ListPrinterOfUser() { UserId = adminId, PrinterId = 2 });
 
             modelBuilder.Entity<BlockList>().HasData(
-                new BlockList() {Id = 1, UserId = adminId, UserBlockedId = clientId , BlackListFilePath = "C://BackList.txt"} );
+                new BlockList() {Id = 1, UserId = adminId, UserBlocked = "DKFAJ56" , BlackListFilePath = "C://BackList.txt"} );
 
             modelBuilder.Entity<HistoryOfUser>().HasData(
                 new HistoryOfUser() 
-                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "C://xxx.docx", ActionHistory = ActionHistory.SendFile, DateTime = DateTime.Now});
+                { Id = 1, UserId = adminId, PrinterId = 1, FileName = "C://xxx.docx", ActionHistory = ActionHistory.OrderSendFile, DateTime = DateTime.Now});
 
             // any guid
             

@@ -6,7 +6,7 @@ namespace PrintShareSolution.ViewModels.Catalog.Printers
 {
     public class PrinterDeleteRequest
     {
-        public Guid UserId { get; set; }
+        public string MyId { get; set; }
         public int PrinterId { get; set; }
     }
 }

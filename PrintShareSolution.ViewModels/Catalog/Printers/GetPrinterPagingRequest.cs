@@ -8,7 +8,7 @@ namespace PrintShareSolution.ViewModels.Catalog.Printers
 {
     public class GetPrinterPagingRequest : PagingRequestBase
     {
-        public Guid UserId { get; set; }
+        public string MyId { get; set; }
         public Status Status { get; set; }
     }
 }

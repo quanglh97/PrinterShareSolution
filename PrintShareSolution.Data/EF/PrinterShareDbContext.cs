@@ -19,6 +19,7 @@ namespace PrintShareSolution.Data.EF
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Configure using Fluent API
+            modelBuilder.ApplyConfiguration(new OrderSendFileConfiguration());
             modelBuilder.ApplyConfiguration(new OrderPrintFileConfiguration());
             modelBuilder.ApplyConfiguration(new PrinterConfiguration());
             modelBuilder.ApplyConfiguration(new ListPrinterOfUserConfiguration());
@@ -47,5 +48,6 @@ namespace PrintShareSolution.Data.EF
         public DbSet<ListPrinterOfUser>ListPrinterOfUsers { get; set; }
         public DbSet<BlockList>BlockLists { get; set; }
         public DbSet<HistoryOfUser>HistoryOfUsers { get; set; }
+        public DbSet<OrderSendFile> OrderSendFiles { get; set; }
     }
 }

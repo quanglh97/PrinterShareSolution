@@ -8,8 +8,7 @@ namespace PrintShareSolution.Data.Entities
     {
         public int Id { get; set; }
         public Guid UserId { get; set; }
-        public Guid UserBlockedId { get; set; }
-
+        public string UserBlocked { get; set; }
         public string BlackListFilePath { get; set; }
         public AppUser AppUser { set; get; }
     }

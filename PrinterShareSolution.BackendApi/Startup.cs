@@ -15,6 +15,15 @@ using Microsoft.OpenApi.Models;
 using PrinterShareSolution.Application.Common;
 using PrinterShareSolution.Application.Catalog.Printers;
 using PrinterShareSolution.Application.Catalog.OrderPrinterFiles;
+using Microsoft.AspNetCore.Identity;
+using PrintShareSolution.Data.Entities;
+using PrinterShareSolution.Application.System.Roles;
+using eShopSolution.Application.System.Roles;
+using PrinterShareSolution.Application.System.Users;
+using eShopSolution.Application.System.Users;
+using PrinterShareSolution.Application.Catalog.OrderSendFiles;
+using PrinterShareSolution.Application.Catalog.HistoryOfUsers;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace PrinterShareSolution.BackendApi
 {
@@ -30,8 +39,18 @@ namespace PrinterShareSolution.BackendApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+            });
+
             services.AddDbContext<PrinterShareDbContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+              options.UseSqlServer(Configuration.GetConnectionString(SystemConstants.MainConnectionString)));
+
+            services.AddIdentity<AppUser, AppRole>()
+            .AddEntityFrameworkStores<PrinterShareDbContext>()
+                 .AddDefaultTokenProviders();
 
             services.AddControllersWithViews();
 
@@ -40,6 +59,14 @@ namespace PrinterShareSolution.BackendApi
 
             services.AddTransient<IPrinterService, PrinterService>();
             services.AddTransient<IOrderPrintFileService, OrderPrintFileService>();
+            services.AddTransient<IOrderSendFileService, OrderSendFileService>();
+            services.AddTransient<IHistoryOfUserService, HistoryOfUserService>();
+
+            services.AddTransient<UserManager<AppUser>, UserManager<AppUser>>();
+            services.AddTransient<SignInManager<AppUser>, SignInManager<AppUser>>();
+            services.AddTransient<RoleManager<AppRole>, RoleManager<AppRole>>();
+            services.AddTransient<IRoleService, RoleService>();
+            services.AddTransient<IUserService, UserService>();
 
             services.AddSwaggerGen(c =>
             {

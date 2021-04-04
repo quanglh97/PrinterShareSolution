@@ -15,8 +15,10 @@ namespace PrinterShareSolution.Application.Catalog.Printers
 
         Task<int> Delete(PrinterDeleteRequest request);
 
-        Task<PrinterVm> GetById(int printerId, Guid userId);
+        Task<PrinterVm> GetById(int printerId);
 
-        Task<PagedResult<PrinterVm>> GetAllPaging(GetPrinterPagingRequest request);
+        Task<PagedResult<PrinterVm>> GetStatusPaging(GetPrinterPagingRequest request);
+        Task<PagedResult<PrinterVm>> GetKeyWordPaging(string KeyWord);
+        Task<PagedResult<PrinterVm>> GetPrinterNewStatus(GetPrinterNewStatusRequest request);
     }
 }

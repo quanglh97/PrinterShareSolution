@@ -17,9 +17,16 @@ namespace PrintShareSolution.Data.Enums
     }
     public enum ActionHistory
     {
-        SendFile,
-        OrderPrintFile,
-        ReceiveFile,
-        PrintFile
+        OrderSendFile, //yeu cau gui file 0
+        OrderPrintFile, //yeu cau in file 1
+        ReceiveFile, //nhan file          2
+        PrintFile //in file               3
+    }
+    public enum Result 
+    {
+        NotDone, //chua thuc thien yeu cau = 0
+        Success, //thuc hien thanh cong = 1
+        CancelPrint,  //tu choi thuc hien yeu cau in = 2
+        CancelReceive, // tu choi nhan file = 3
     }
 }

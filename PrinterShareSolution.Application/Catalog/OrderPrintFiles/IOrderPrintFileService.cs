@@ -11,7 +11,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
     {
         Task<int> Create(OrderPrintFileCreateRequest request);
         Task<int> Delete(OrderPrintFileDeleteRequest request);
-        Task<PagedResult<OrderPrintFileVm>> GetByPrinterId(GetOrderPrintFilePagingRequest request);
+        Task<PagedResult<OrderPrintFileVm>> GetByMyId(GetOrderPrintFilePagingRequest request);
         Task<OrderPrintFileVm> GetById(int id);
+        
     }
 }

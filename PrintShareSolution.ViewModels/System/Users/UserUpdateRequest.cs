@@ -7,7 +7,8 @@ namespace PrintShareSolution.ViewModels.System.Users
 {
     public class UserUpdateRequest
     {
-        public Guid Id { get; set; }
+        /*[Display(Name = "MyId")]
+        public string MyId { get; set; }*/
 
         [Display(Name = "Tên đầy đủ")]
         public string FullName { get; set; }
