@@ -29,4 +29,10 @@ namespace PrintShareSolution.Data.Enums
         CancelPrint,  //tu choi thuc hien yeu cau in = 2
         CancelReceive, // tu choi nhan file = 3
     }
+    public enum Duplex
+    {
+        OneFace,
+        TwoFaceVertical,
+        TwoFaceHorizontal,
+    }
 }

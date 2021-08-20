@@ -29,9 +29,9 @@ namespace PrintShareSolution.Data.EF
             modelBuilder.ApplyConfiguration(new AppConfigConfiguration());
             modelBuilder.ApplyConfiguration(new AppUserConfiguration());
             modelBuilder.ApplyConfiguration(new AppRoleConfiguration());
-           
 
-
+            modelBuilder.ApplyConfiguration(new AppVersionFileConfiguration());
+          
             //Identity
             modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("AppUserClaims");
             modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("AppUserRoles").HasKey(x => new { x.UserId, x.RoleId });
@@ -49,5 +49,6 @@ namespace PrintShareSolution.Data.EF
         public DbSet<BlockList>BlockLists { get; set; }
         public DbSet<HistoryOfUser>HistoryOfUsers { get; set; }
         public DbSet<OrderSendFile> OrderSendFiles { get; set; }
+        public DbSet<AppVersionFile> AppVersionFiles { get; set; }
     }
 }

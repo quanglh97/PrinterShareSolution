@@ -23,12 +23,12 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly PrinterShareDbContext _context;
-        private readonly IStorageService _storageService;
+        private readonly IFileStorageService _storageService;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
         public OrderPrintFileService(
             PrinterShareDbContext context, 
-            IStorageService storageService,
+            IFileStorageService storageService,
             UserManager<AppUser> userManager)
         {
             _context = context;
@@ -54,7 +54,8 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     FileSize = request.ThumbnailFile.Length,
                     FileName = request.FileName,
                     FilePath = await this.SaveFile(request.ThumbnailFile),
-                    Pages = request.Pages
+                    Pages = request.Pages,
+                    Duplex = (Duplex)request.duplex                    
                 };
 
                 _context.OrderPrintFiles.Add(orderPrintFile);
@@ -145,6 +146,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                     PrinterName = x.p.Name,
                     FileName = x.opf.FileName,
                     FileSize = x.opf.FileSize,
+                    Duplex = (PrintShareSolution.ViewModels.Enums.Duplex)x.opf.Duplex,
                     Pages = x.opf.Pages,
                     DateTime = x.opf.DateTime,
                     FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + x.opf.FilePath
@@ -216,6 +218,7 @@ namespace PrinterShareSolution.Application.Catalog.OrderPrinterFiles
                 FileName = orderPrintFile.FileName,
                 DateTime = orderPrintFile.DateTime,
                 FileSize = orderPrintFile.FileSize,
+                Duplex = (PrintShareSolution.ViewModels.Enums.Duplex)orderPrintFile.Duplex,
                 Pages = orderPrintFile.Pages,
                 FilePath = "/" + USER_CONTENT_FOLDER_NAME + "/" + orderPrintFile.FilePath
             };

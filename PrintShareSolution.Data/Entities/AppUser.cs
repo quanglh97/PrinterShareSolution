@@ -8,6 +8,7 @@ namespace PrintShareSolution.Data.Entities
     public class AppUser : IdentityUser<Guid>
     {
         public string FullName { get; set; }
+        public string CurrentVersion {get; set;}
         public DateTime LastRequestTime { get; set; }
         
         public List<BlockList> BlockIds { get; set; }

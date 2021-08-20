@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PrintShareSolution.Data.Migrations
 {
-    public partial class again : Migration
+    public partial class VersionIsString : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -96,6 +96,8 @@ namespace PrintShareSolution.Data.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    CurrentVersion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastRequestTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -131,6 +133,25 @@ namespace PrintShareSolution.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppVersionFile",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Version = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FilePathSetup = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FileSize = table.Column<long>(type: "bigint", nullable: false),
+                    Md5 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppVersionFile", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Printers",
                 columns: table => new
                 {
@@ -151,8 +172,8 @@ namespace PrintShareSolution.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserBlockedId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BlackListFilePath = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    UserBlocked = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BlackListFilePath = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,13 +187,42 @@ namespace PrintShareSolution.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "HistoryOfUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ReceiveId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PrinterId = table.Column<int>(type: "int", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FileSize = table.Column<long>(type: "bigint", nullable: false),
+                    Pages = table.Column<int>(type: "int", nullable: false),
+                    ActionHistory = table.Column<int>(type: "int", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Result = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    OrderPrintFileId = table.Column<int>(type: "int", nullable: false),
+                    OrderSendFileId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HistoryOfUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HistoryOfUsers_AppUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AppUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OrderSendFiles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserNameReceive = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
+                    ReceiveId = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FileSize = table.Column<long>(type: "bigint", nullable: false),
@@ -185,36 +235,6 @@ namespace PrintShareSolution.Data.Migrations
                         name: "FK_OrderSendFiles_AppUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HistoryOfUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserReceive = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PrinterId = table.Column<int>(type: "int", nullable: false),
-                    FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ActionHistory = table.Column<int>(type: "int", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HistoryOfUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_HistoryOfUsers_AppUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AppUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_HistoryOfUsers_Printers_PrinterId",
-                        column: x => x.PrinterId,
-                        principalTable: "Printers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -254,7 +274,9 @@ namespace PrintShareSolution.Data.Migrations
                     FileName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FilePath = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FileSize = table.Column<long>(type: "bigint", nullable: false),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    Pages = table.Column<int>(type: "int", nullable: false),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Duplex = table.Column<int>(type: "int", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {
@@ -286,7 +308,7 @@ namespace PrintShareSolution.Data.Migrations
             migrationBuilder.InsertData(
                 table: "AppRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName" },
-                values: new object[] { new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"), "b4d10036-38bb-48b4-b787-291a5f2ebeb9", "Administrator role", "admin", "admin" });
+                values: new object[] { new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"), "8f146771-af3a-4f5c-bc65-b1c4933fabdc", "Administrator role", "admin", "admin" });
 
             migrationBuilder.InsertData(
                 table: "AppUserRoles",
@@ -295,8 +317,8 @@ namespace PrintShareSolution.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "AppUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FullName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), 0, "d62430c8-7696-4c3b-8743-89f882201d7e", "quanglehoi@gmail.com", true, "Lê Hội Quang", false, null, "quanglehoi@gmail.com", "admin", "AQAAAAEAACcQAAAAEAA1qa1dvDQnX+iAjJRuph49sxx5V0mr+jACwvjz1z/Aln3XJOcKA5LlSah3dLDLLw==", null, false, "", false, "admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CurrentVersion", "Email", "EmailConfirmed", "FullName", "LastRequestTime", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), 0, "d81dbd35-40e8-4367-a126-9581a15517b6", "0", "quanglehoi@gmail.com", true, "Lê Hội Quang", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, null, "quanglehoi@gmail.com", "admin", "AQAAAAEAACcQAAAAEK6cVe1kJNtmV1AbrsI6R3pEnKb14o5EoeoSkx/iRszgPNd/HMM3FJXZcqUfvBNcBQ==", null, false, "", false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "Printers",
@@ -309,13 +331,13 @@ namespace PrintShareSolution.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "BlockLists",
-                columns: new[] { "Id", "BlackListFilePath", "UserBlockedId", "UserId" },
-                values: new object[] { 1, "C://BackList.txt", new Guid("69bd714f-9576-45ba-b5b7-f00649be0044"), new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") });
+                columns: new[] { "Id", "BlackListFilePath", "UserBlocked", "UserId" },
+                values: new object[] { 1, "C://BackList.txt", "DKFAJ56", new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") });
 
             migrationBuilder.InsertData(
                 table: "HistoryOfUsers",
-                columns: new[] { "Id", "ActionHistory", "DateTime", "FileName", "PrinterId", "UserId", "UserReceive" },
-                values: new object[] { 1, 0, new DateTime(2021, 1, 28, 14, 40, 42, 283, DateTimeKind.Local).AddTicks(5557), "C://xxx.docx", 1, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), null });
+                columns: new[] { "Id", "ActionHistory", "DateTime", "FileName", "FileSize", "OrderPrintFileId", "OrderSendFileId", "Pages", "PrinterId", "ReceiveId", "UserId" },
+                values: new object[] { 1, 0, new DateTime(2021, 6, 3, 20, 12, 28, 323, DateTimeKind.Local).AddTicks(4106), "C://xxx.docx", 0L, 0, 0, 0, 1, null, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") });
 
             migrationBuilder.InsertData(
                 table: "ListPrinterOfUser",
@@ -328,31 +350,26 @@ namespace PrintShareSolution.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "OrderPrintFiles",
-                columns: new[] { "Id", "DateTime", "FileName", "FilePath", "FileSize", "PrinterId", "UserId" },
+                columns: new[] { "Id", "DateTime", "FileName", "FilePath", "FileSize", "Pages", "PrinterId", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, 1, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") },
-                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, 2, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") }
+                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, 0, 1, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") },
+                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, 0, 2, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") }
                 });
 
             migrationBuilder.InsertData(
                 table: "OrderSendFiles",
-                columns: new[] { "Id", "DateTime", "FileName", "FilePath", "FileSize", "UserId", "UserNameReceive" },
+                columns: new[] { "Id", "DateTime", "FileName", "FilePath", "FileSize", "ReceiveId", "UserId" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), "KhaiTb" },
-                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"), "KhaiTb" }
+                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, "KhaiTb", new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") },
+                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "xxx.docx", "C://xxx.docx", 0L, "KhaiTb", new Guid("69bd714f-9576-45ba-b5b7-f00649be00de") }
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_BlockLists_UserId",
                 table: "BlockLists",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_HistoryOfUsers_PrinterId",
-                table: "HistoryOfUsers",
-                column: "PrinterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_HistoryOfUsers_UserId",
@@ -402,6 +419,9 @@ namespace PrintShareSolution.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AppUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "AppVersionFile");
 
             migrationBuilder.DropTable(
                 name: "BlockLists");

@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models; 
 using PrinterShareSolution.Application.Common;
 using PrinterShareSolution.Application.Catalog.Printers;
 using PrinterShareSolution.Application.Catalog.OrderPrinterFiles;
@@ -24,6 +24,7 @@ using eShopSolution.Application.System.Users;
 using PrinterShareSolution.Application.Catalog.OrderSendFiles;
 using PrinterShareSolution.Application.Catalog.HistoryOfUsers;
 using Microsoft.AspNetCore.Http.Features;
+using PrinterShareSolution.Application.Catalog.Update;
 
 namespace PrinterShareSolution.BackendApi
 {
@@ -55,7 +56,7 @@ namespace PrinterShareSolution.BackendApi
             services.AddControllersWithViews();
 
             //Declare DI
-            services.AddTransient<IStorageService, FileStorageService>();
+            services.AddTransient<IFileStorageService, FileStorageService>();
 
             services.AddTransient<IPrinterService, PrinterService>();
             services.AddTransient<IOrderPrintFileService, OrderPrintFileService>();
@@ -68,9 +69,11 @@ namespace PrinterShareSolution.BackendApi
             services.AddTransient<IRoleService, RoleService>();
             services.AddTransient<IUserService, UserService>();
 
+            services.AddTransient<IUpdateVersionService, UpdateVersionService>();
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger PrinterShareSolution", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Swagger ePrinter", Version = "v1" });
 
                 /*c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

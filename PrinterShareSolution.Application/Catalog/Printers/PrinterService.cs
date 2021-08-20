@@ -15,16 +15,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace PrinterShareSolution.Application.Catalog.Printers
 {
-    public class PrinterService :IPrinterService
+    public class PrinterService : IPrinterService
     {
         private readonly PrinterShareDbContext  _context;
-        private readonly IStorageService _storageService;
+        private readonly IFileStorageService _storageService;
         private readonly UserManager<AppUser> _userManager;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
         public PrinterService(
             PrinterShareDbContext context, 
-            IStorageService storageService,
+            IFileStorageService storageService,
             UserManager<AppUser> userManager)
         {
             _context = context;

@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace PrinterShareSolution.Application.Common
 {
-    public interface IStorageService
+    public interface IFileStorageService
     {
         string GetFileUrl(string fileName);
 
         Task SaveFileAsync(Stream mediaBinaryStream, string fileName);
+        Task SaveFileUpdateAsync(Stream mediaBinaryStream, string fileName, string version);
 
         Task DeleteFileAsync(string fileName);
+        Task DeleteFileUpdateAsync(string fileName);
     }
 }

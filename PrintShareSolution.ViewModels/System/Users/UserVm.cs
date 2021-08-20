@@ -21,6 +21,9 @@ namespace PrintShareSolution.ViewModels.System.Users
         [Display(Name = "Email")]
         public string Email { get; set; }
 
+        [Display(Name = "Phiên bản hiện tại")]
+        public string CurrentVersion { get; set; }
+
         public IList<string> Roles { get; set; }
     }
 }

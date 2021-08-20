@@ -142,6 +142,7 @@ namespace eShopSolution.Application.System.Users
                     myId = x.UserName,
                     FullName = x.FullName,
                     Id = x.Id,
+                    CurrentVersion = x.CurrentVersion
                 }).ToListAsync();
 
             //4. Select and projection
@@ -203,7 +204,8 @@ namespace eShopSolution.Application.System.Users
                 Email = user.Email,
                 myId = user.UserName,
                 PhoneNumber = user.PhoneNumber,
-                Id = user.Id
+                Id = user.Id,
+                CurrentVersion = user.CurrentVersion
             };
             if (result.Succeeded)
             {

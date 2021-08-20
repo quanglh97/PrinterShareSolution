@@ -71,6 +71,7 @@ namespace eShopSolution.Data.Extensions
                 PasswordHash = hasher.HashPassword(null, "Abcd1234$"),
                 SecurityStamp = string.Empty,
                 FullName = "Lê Hội Quang",
+                CurrentVersion = "0",
               
             });
 

@@ -17,13 +17,13 @@ namespace PrinterShareSolution.Application.Catalog.HistoryOfUsers
     public class HistoryOfUserService : IHistoryOfUserService
     {
         private readonly PrinterShareDbContext _context;
-        private readonly IStorageService _storageService;
+        private readonly IFileStorageService _storageService;
         private readonly UserManager<AppUser> _userManager;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
         public HistoryOfUserService(
             PrinterShareDbContext context,
-            IStorageService storageService,
+            IFileStorageService storageService,
             UserManager<AppUser> userManager)
         {
             _context = context;

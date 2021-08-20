@@ -3,65 +3,72 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace PrintShareSolution.Data.Migrations
 {
-    public partial class again4 : Migration
+    public partial class VersionIsString2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTime>(
-                name: "LastRequestTime",
+            migrationBuilder.AlterColumn<string>(
+                name: "CurrentVersion",
                 table: "AppUsers",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                type: "nvarchar(max)",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)");
 
             migrationBuilder.UpdateData(
                 table: "AppRoles",
                 keyColumn: "Id",
                 keyValue: new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                 column: "ConcurrencyStamp",
-                value: "52c8d680-b379-4a4c-aa44-2020a84ea3a0");
+                value: "ab11a853-1a4d-47a3-8edd-b692d4c7d718");
 
             migrationBuilder.UpdateData(
                 table: "AppUsers",
                 keyColumn: "Id",
                 keyValue: new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                 columns: new[] { "ConcurrencyStamp", "PasswordHash" },
-                values: new object[] { "3c059ad4-d5e5-4382-a87a-9b52048078a4", "AQAAAAEAACcQAAAAEBhif0/6HEsXMyYHDMGupnKiJUaT++VldFJr6k3f0cW8V5epu/iBi1chQTWL4p/AJw==" });
+                values: new object[] { "e61ddbad-27b9-48a8-8299-ad704852110b", "AQAAAAEAACcQAAAAEETWhSaVjWJ/ccjkNmziXFkA9M3gZHCOqDWTQz3H/vemH3Iw1klOZcDQL1sXxvy7pQ==" });
 
             migrationBuilder.UpdateData(
                 table: "HistoryOfUsers",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "DateTime",
-                value: new DateTime(2021, 1, 28, 21, 46, 34, 784, DateTimeKind.Local).AddTicks(664));
+                value: new DateTime(2021, 6, 3, 22, 56, 37, 926, DateTimeKind.Local).AddTicks(9121));
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "LastRequestTime",
-                table: "AppUsers");
+            migrationBuilder.AlterColumn<string>(
+                name: "CurrentVersion",
+                table: "AppUsers",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "",
+                oldClrType: typeof(string),
+                oldType: "nvarchar(max)",
+                oldNullable: true);
 
             migrationBuilder.UpdateData(
                 table: "AppRoles",
                 keyColumn: "Id",
                 keyValue: new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
                 column: "ConcurrencyStamp",
-                value: "9c089b8f-1e84-4571-974a-3b2e2c45bc8b");
+                value: "8f146771-af3a-4f5c-bc65-b1c4933fabdc");
 
             migrationBuilder.UpdateData(
                 table: "AppUsers",
                 keyColumn: "Id",
                 keyValue: new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                 columns: new[] { "ConcurrencyStamp", "PasswordHash" },
-                values: new object[] { "373e0576-1636-4abd-ab8b-41e6f34547f6", "AQAAAAEAACcQAAAAEPGyVm1kk5KvZ0UYeegmVb3F3iV/sTuTeyfnorEctSgTsRv0SK8EkzB0H5yWuEsxsQ==" });
+                values: new object[] { "d81dbd35-40e8-4367-a126-9581a15517b6", "AQAAAAEAACcQAAAAEK6cVe1kJNtmV1AbrsI6R3pEnKb14o5EoeoSkx/iRszgPNd/HMM3FJXZcqUfvBNcBQ==" });
 
             migrationBuilder.UpdateData(
                 table: "HistoryOfUsers",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "DateTime",
-                value: new DateTime(2021, 1, 28, 20, 58, 24, 422, DateTimeKind.Local).AddTicks(9533));
+                value: new DateTime(2021, 6, 3, 20, 12, 28, 323, DateTimeKind.Local).AddTicks(4106));
         }
     }
 }

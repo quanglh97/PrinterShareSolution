@@ -10,8 +10,8 @@ using PrintShareSolution.Data.EF;
 namespace PrintShareSolution.Data.Migrations
 {
     [DbContext(typeof(PrinterShareDbContext))]
-    [Migration("20210131200406_addResultHistory")]
-    partial class addResultHistory
+    [Migration("20210603155639_VersionIsString2")]
+    partial class VersionIsString2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -181,7 +181,7 @@ namespace PrintShareSolution.Data.Migrations
                         new
                         {
                             Id = new Guid("8d04dce2-969a-435d-bba4-df3f325983dc"),
-                            ConcurrencyStamp = "524215dc-52c5-4f06-93df-a106b42005e8",
+                            ConcurrencyStamp = "ab11a853-1a4d-47a3-8edd-b692d4c7d718",
                             Description = "Administrator role",
                             Name = "admin",
                             NormalizedName = "admin"
@@ -198,6 +198,9 @@ namespace PrintShareSolution.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CurrentVersion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -253,7 +256,8 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = new Guid("69bd714f-9576-45ba-b5b7-f00649be00de"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6aefbb6b-523a-4196-b922-3994b2ae55e7",
+                            ConcurrencyStamp = "e61ddbad-27b9-48a8-8299-ad704852110b",
+                            CurrentVersion = "0",
                             Email = "quanglehoi@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Lê Hội Quang",
@@ -261,12 +265,53 @@ namespace PrintShareSolution.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "quanglehoi@gmail.com",
                             NormalizedUserName = "admin",
-                            PasswordHash = "AQAAAAEAACcQAAAAEK0C6Y6Jw91Mn/ICnFn7uK8AGnel4JWmadRpX/6URu/BaLpx1l21/DbLAivCwXgaUw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEETWhSaVjWJ/ccjkNmziXFkA9M3gZHCOqDWTQz3H/vemH3Iw1klOZcDQL1sXxvy7pQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "",
                             TwoFactorEnabled = false,
                             UserName = "admin"
                         });
+                });
+
+            modelBuilder.Entity("PrintShareSolution.Data.Entities.AppVersionFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FilePathSetup")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Md5")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppVersionFile");
                 });
 
             modelBuilder.Entity("PrintShareSolution.Data.Entities.BlockList", b =>
@@ -320,6 +365,9 @@ namespace PrintShareSolution.Data.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("OrderPrintFileId")
                         .HasColumnType("int");
 
@@ -354,8 +402,9 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = 1,
                             ActionHistory = 0,
-                            DateTime = new DateTime(2021, 2, 1, 3, 4, 5, 494, DateTimeKind.Local).AddTicks(2833),
+                            DateTime = new DateTime(2021, 6, 3, 22, 56, 37, 926, DateTimeKind.Local).AddTicks(9121),
                             FileName = "C://xxx.docx",
+                            FileSize = 0L,
                             OrderPrintFileId = 0,
                             OrderSendFileId = 0,
                             Pages = 0,
@@ -402,6 +451,11 @@ namespace PrintShareSolution.Data.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Duplex")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -437,6 +491,7 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = 1,
                             DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Duplex = 0,
                             FileName = "xxx.docx",
                             FilePath = "C://xxx.docx",
                             FileSize = 0L,
@@ -448,6 +503,7 @@ namespace PrintShareSolution.Data.Migrations
                         {
                             Id = 2,
                             DateTime = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Duplex = 0,
                             FileName = "xxx.docx",
                             FilePath = "C://xxx.docx",
                             FileSize = 0L,

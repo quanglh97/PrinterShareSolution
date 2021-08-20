@@ -17,5 +17,6 @@ namespace PrintShareSolution.Data.Entities
         public DateTime DateTime { get; set; }
         public Printer Printer { get; set; }
         public AppUser AppUser { get; set; }
+        public Duplex Duplex { get; set; } 
     }
 }

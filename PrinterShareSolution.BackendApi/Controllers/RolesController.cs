@@ -10,6 +10,7 @@ using PrinterShareSolution.Application.System.Roles;
 
 namespace PrinterShareSolution.BackendApi.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]

@@ -30,4 +30,10 @@ namespace PrintShareSolution.ViewModels.Enums
         CancelPrint,  //tu choi thuc hien yeu cau
         CancelReceive,
     }
+    public enum Duplex
+    {
+        OneFace,
+        TwoFaceVertical,
+        TwoFaceHorizontal,
+    }
 }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PrinterShareSolution.Application": {
+      "commandName": "Project",
+      "sqlDebugging": false
+    }
+  }
+}

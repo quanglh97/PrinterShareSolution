@@ -13,5 +13,6 @@ namespace PrintShareSolution.ViewModels.Catalog.OrderPrintFile
         public string FileName { get; set; }
         public int Pages { get; set; } //number pages order print of this file
         public IFormFile ThumbnailFile { get; set; }
+        public Duplex duplex { get; set; }
     }
 }

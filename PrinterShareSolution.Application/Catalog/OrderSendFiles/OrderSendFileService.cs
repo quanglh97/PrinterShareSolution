@@ -23,12 +23,12 @@ namespace PrinterShareSolution.Application.Catalog.OrderSendFiles
 
         private readonly UserManager<AppUser> _userManager;
         private readonly PrinterShareDbContext _context;
-        private readonly IStorageService _storageService;
+        private readonly IFileStorageService _storageService;
         private const string USER_CONTENT_FOLDER_NAME = "user-content";
 
         public OrderSendFileService(
             PrinterShareDbContext context,
-            IStorageService storageService,
+            IFileStorageService storageService,
             UserManager<AppUser> userManager)
         {
             _context = context;
